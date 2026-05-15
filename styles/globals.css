@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --lime:     #C8F500;
+  --mint:     #00E676;
+  --navy:     #0D1F5C;
+  --bg:       #053D32;
+  --card:     #083D30;
+  --sf:       #062E25;
+  --sf2:      #073329;
+  --text:     #FFFFFF;
+  --text-sec: #E0F2EE;
+  --muted:    #5A9A8A;
+  --white:    #FFFFFF;
+  --red:      #F87171;
+  --border:   rgba(200,245,0,.12);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text-sec);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+select, input, button, textarea {
+  font-family: 'Inter', sans-serif;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235A9A8A' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px !important;
+  cursor: pointer;
+}
