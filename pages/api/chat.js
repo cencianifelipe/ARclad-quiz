@@ -33,17 +33,22 @@ Formato exato:
 
 ═══ REGRA FUNDAMENTAL — O QUE É "OPORTUNIDADE" ═══
 
-⚠️ ATENÇÃO: A "oportunidade" é uma RECOMENDAÇÃO COMERCIAL — qual material/solução ARclad o visitante deveria considerar comprar.
+⚠️ REGRA MAIS IMPORTANTE — LEIA COM ATENÇÃO ⚠️
 
-❌ A oportunidade NÃO é o tema da pergunta técnica (Q8).
-❌ Se a Q8 perguntou sobre adesivo para congelados, isso NÃO significa que o cliente precisa de material para congelados.
-❌ A pergunta técnica é só um teste de conhecimento — IGNORE o tema dela ao gerar a oportunidade.
+A "oportunidade" é UMA RECOMENDAÇÃO COMERCIAL de qual material/solução ARclad o cliente deve comprar.
 
-✅ A oportunidade vem APENAS de:
+A PERGUNTA TÉCNICA (Q8) É UM TESTE DE CONHECIMENTO — ela NÃO revela o que o cliente precisa comprar.
+Exemplos do que NÃO fazer:
+- Q8 perguntou sobre PDV → NÃO recomende material para PDV
+- Q8 perguntou sobre substratos térmicos → NÃO recomende térmicos
+- Q8 perguntou sobre Couché → NÃO recomende Couché só por isso
+- Q8 perguntou sobre congelados → NÃO recomende adesivo para congelados
+
+A oportunidade vem EXCLUSIVAMENTE de:
 1. SEGMENTO (Q1) — quem é o cliente
 2. MATERIAL ATUAL (Q6) — o que ele já compra
 3. DESAFIO (Q9) — qual a dor real
-4. GATILHO DE TROCA (Q10) — o que faria ele mudar de fornecedor
+4. GATILHO DE TROCA (Q10) — o que faria ele mudar
 5. TIMING (Q11) — quando precisa
 
 ═══ PORTFÓLIO ARclad ═══
@@ -146,7 +151,13 @@ oportunidade: 1 frase com produto ARclad específico que resolve dor real do cli
         /entrega\s+r[áa]pida/i,
         /entrega\s+[áa]gil/i,
         /prazo\s+curto/i,
-        /congelado/i, // não recomendar baseado em Q8 técnica
+        /congelado/i,
+        /projetos?\s+pdv/i,       // Q8 sobre PDV vazando
+        /substratos?\s+t[eé]rmico/i, // muito genérico como oportunidade
+        /t[eé]rmicos?\s+arclad/i, // térmicos como única oportunidade é vago
+        /food[\s-]?safe/i,        // técnico demais para oportunidade
+        /hot\s*stamp/i,           // técnico demais
+        /liner\s+siliconado/i,    // técnico demais
       ]
       
       const hasBanned = bannedPatterns.some(rx => rx.test(oport))
