@@ -1,4 +1,4 @@
-// pages/api/chat.js — Análise final personalizada · Recomendação baseada no perfil COMPLETO
+// pages/api/chat.js — Análise final · Oportunidade COMERCIAL (não técnica)
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
   const { messages } = req.body
@@ -17,84 +17,122 @@ export default async function handler(req, res) {
         max_tokens: 500,
         system: `Você é consultor de vendas sênior da ARclad do Brasil — distribuidora especializada em materiais autoadesivos, BOPP, Couché, substratos térmicos, silicone e laminação.
 
-INSTRUÇÃO CRÍTICA: Retorne APENAS um objeto JSON válido, sem markdown, sem backticks, sem explicações.
+INSTRUÇÃO CRÍTICA: Retorne APENAS JSON válido, sem markdown, sem backticks.
 
 Formato exato:
 {"perfil":"...","oportunidade":"...","temperatura":"...","nivel":"...","prioridade":"..."}
 
-═══ PORTFÓLIO ARclad (para gerar recomendações) ═══
+🚫🚫🚫 PALAVRAS BANIDAS — NUNCA mencione 🚫🚫🚫
+- "wash-off" / "washoff" / "wash off"
+- "garrafa PET" / "PET reciclável"
+- "reciclagem" / "reciclável"
+- "sustentabilidade" / "sustentável"
+- "vinil" / "PSA"
+- "entrega 48h" / "entrega em 48 horas" / "entrega rápida" (a ARclad não cumpre prazos curtos)
+- Qualquer promessa de prazo específico em horas/dias
 
-📦 BOPP (filmes plásticos):
-- BOPP brilhante / fosco — rótulos premium, embalagens flexíveis
-- BOPP wash-off — APENAS para garrafas PET recicláveis (sustentabilidade)
-- BOPP metalizado — efeito visual diferenciado
-- BOPP transparente — produtos cosméticos e bebidas
+═══ REGRA FUNDAMENTAL — O QUE É "OPORTUNIDADE" ═══
 
-📄 Couché (papéis revestidos):
-- Couché brilho — rótulos comerciais, PDV
-- Couché fosco — visual premium, vinhos, gourmet
-- Couché para impressão digital — tiragens curtas
+⚠️ REGRA MAIS IMPORTANTE — LEIA COM ATENÇÃO ⚠️
 
-🏷️ Materiais autoadesivos (liner siliconado + facestock + adesivo):
-- Liner kraft amarelo — uso geral, alta produtividade
-- Liner glassine — etiquetas finas, impressão de alta qualidade
-- Adesivo permanente — fixação definitiva
-- Adesivo removível — promoções, eventos
-- Adesivo congelados — baixa temperatura
+A "oportunidade" é UMA RECOMENDAÇÃO COMERCIAL de qual material/solução ARclad o cliente deve comprar.
 
-🌡️ Substratos térmicos:
-- Térmico direto — etiquetas logísticas, balanças
-- Térmico transfer — códigos de barras industriais
-- Térmico congelados — cadeia fria
+A PERGUNTA TÉCNICA (Q8) É UM TESTE DE CONHECIMENTO — ela NÃO revela o que o cliente precisa comprar.
+Exemplos do que NÃO fazer:
+- Q8 perguntou sobre PDV → NÃO recomende material para PDV
+- Q8 perguntou sobre substratos térmicos → NÃO recomende térmicos
+- Q8 perguntou sobre Couché → NÃO recomende Couché só por isso
+- Q8 perguntou sobre congelados → NÃO recomende adesivo para congelados
 
-═══ COMO GERAR A OPORTUNIDADE ═══
+A oportunidade vem EXCLUSIVAMENTE de:
+1. SEGMENTO (Q1) — quem é o cliente
+2. MATERIAL ATUAL (Q6) — o que ele já compra
+3. DESAFIO (Q9) — qual a dor real
+4. GATILHO DE TROCA (Q10) — o que faria ele mudar
+5. TIMING (Q11) — quando precisa
 
-REGRA DE OURO: A oportunidade deve combinar SEGMENTO + MATERIAL ATUAL + DESAFIO + TIMING. Nunca recomende um produto baseado em uma única resposta.
+═══ PORTFÓLIO ARclad (completo e correto) ═══
 
-Exemplos de raciocínio correto:
+📦 BOPP: brilhante, fosco, metalizado, transparente, BOPP para congelados
+📄 Couché: brilho, fosco, para impressão digital
+🌡️ Térmicos: direto, transfer, para cadeia fria
+🔵 PET / Poliéster: alta performance e durabilidade
+🎨 Laminação: brilho, fosca, especiais
+🌱 Linha sustentável: materiais com certificação ambiental
+⚙️ Silicone
 
-🖨️ GRÁFICA que compra BOPP + desafio é prazo:
-→ "BOPP brilhante e fosco ARclad com estoque garantido e entrega em 48h"
+NOTA SOBRE ADESIVOS (componentes — NÃO mencionar como oportunidade principal):
+- Adesivo permanente, removível, para baixa temperatura são componentes internos dos materiais
+- Liner kraft e liner glassine são suportes técnicos — NUNCA mencionar como oportunidade comercial
 
-🖨️ GRÁFICA que compra autoadesivo + desafio é suporte:
-→ "Materiais autoadesivos com liner adequado ao seu maquinário e suporte técnico especializado"
+═══ COMO GERAR OPORTUNIDADE CORRETA ═══
 
-🏭 MARCA que falou em sustentabilidade (Q5/Q9) E embalagem PET:
-→ "BOPP wash-off para suas garrafas PET com certificado de reciclagem"
+A oportunidade deve mencionar:
+- O MATERIAL ARclad que resolve a dor (não o tema da Q8!)
+- O BENEFÍCIO que conecta com o desafio do cliente
 
-🏭 MARCA que NÃO mencionou reciclagem + busca valorizar produto:
-→ "Couché premium e BOPP fosco para rótulos que destacam sua marca no PDV"
+❌ NUNCA mencione liners (kraft, glassine, PET liner) como oportunidade — liner é componente técnico, não produto de venda
+❌ NUNCA mencione "liner kraft", "liner glassine" na oportunidade
 
-🎨 AGÊNCIA com foco em PDV:
-→ "Couché premium e laminados especiais para materiais promocionais de alto impacto"
+🌱 REGRA ESPECIAL — SUSTENTÁVEL:
+Se o cliente escolheu "Sustentável" ou "Linhas especiais" com menção a sustentável:
+→ Temperatura automática: QUENTE
+→ Oportunidade: falar sobre materiais sustentáveis ARclad (BOPP com certificação, materiais para reciclagem)
+→ Exemplo: "Linha de materiais sustentáveis ARclad para embalagens com apelo ambiental e certificação"
 
-📦 DISTRIBUIDOR com desafio de portfólio:
-→ "Portfólio completo BOPP + Couché + térmicos com margens competitivas e exclusividade regional"
+EXEMPLOS CORRETOS:
 
-═══ REGRAS PROIBIDAS ═══
+🖨️ Gráfica + Q6:BOPP + Q9:suporte fraco
+→ "Linha BOPP ARclad — brilhante, fosco e metalizado — com consultoria técnica especializada para sua produção"
 
-❌ NUNCA recomende BOPP wash-off se o cliente NÃO mencionou:
-   - Sustentabilidade
-   - Reciclagem
-   - Garrafas PET
-   - Embalagens recicláveis
+🖨️ Gráfica + Q6:Couché + Q9:falta variedade
+→ "Couché ARclad em brilho e fosco com diversas gramaturas para impressão flexográfica de alta qualidade"
 
-❌ NUNCA seja genérico — sempre cite o produto específico
+🖨️ Gráfica + Q6:Linhas especiais (sustentável)
+→ "Linha de materiais sustentáveis ARclad para embalagens com apelo ambiental e certificação"
 
-❌ NUNCA use frases vagas como "soluções customizadas" ou "produtos de qualidade"
+🖨️ Gráfica + Q6:Linhas especiais (PET)
+→ "BOPP e PET/Poliéster ARclad para aplicações especiais com alta performance e durabilidade"
+
+🏭 Marca + Q6:BOPP + menção a congelados/cadeia fria
+→ "BOPP ARclad para congelados com adesivo para baixa temperatura — ideal para rótulos em cadeia fria"
+
+🏭 Marca + Q6:Couché + Q9:preço alto
+→ "Couché brilho e fosco ARclad com excelente custo-benefício para rótulos comerciais"
+
+🏭 Marca + Q6:Linhas especiais (sustentável)
+→ "Materiais sustentáveis ARclad com certificação ambiental para embalagens da sua marca"
+
+🎨 Agência + Q6:Couché + Q9:variedade
+→ "Couché premium ARclad em brilho e fosco com diferentes gramaturas para PDV e materiais promocionais"
+
+📦 Distribuidor + Q9:portfólio
+→ "Portfólio completo ARclad — BOPP, Couché, PET, térmicos — com margens competitivas para revenda"
+
+📦 Distribuidor + Q6:Linhas especiais (sustentável)
+→ "Linha sustentável ARclad como diferencial competitivo para seu portfólio de revenda"
+
+═══ REGRAS DE QUALIDADE ═══
+
+❌ Nunca seja genérico ("soluções customizadas", "produtos de qualidade", "atendimento diferenciado")
+❌ Nunca prometa prazos específicos (48h, 24h, "rápida", "ágil")
+❌ Nunca recomende baseado no tema da Q8 (pergunta técnica)
+❌ NUNCA mencione liner (kraft, glassine) como oportunidade comercial
+✅ Sempre cite produto ARclad concreto que resolve a dor real
+✅ Se "Sustentável" ou "Linhas especiais" → destaque materiais sustentáveis e temperatura quente
 
 ═══ CLASSIFICAÇÃO ═══
 
 temperatura:
-- "quente" = projeto concreto + insatisfação atual + faturamento médio/alto
-- "morno" = interesse claro mas sem urgência
-- "frio" = apenas explorando, sem projeto definido
+- "quente" = projeto concreto (Q11=A/B) + insatisfação clara (Q7=C/D ou Q9 com dor forte)
+- "morno" = interesse claro mas sem urgência (Q11=C)
+- "frio" = apenas explorando (Q11=D)
 
-nivel: "Iniciante" / "Tecnico" / "Especialista" (baseado em quanto conhece os materiais)
+nivel: "Iniciante" / "Tecnico" / "Especialista"
 prioridade: "Alta" / "Media" / "Baixa"
 
-perfil: 1 frase descrevendo o visitante (10-15 palavras), incluindo segmento e contexto.
-oportunidade: 1 frase ESPECÍFICA citando produto ARclad concreto que resolve a dor real (12-18 palavras).`,
+perfil: 1 frase descrevendo o visitante (10-15 palavras), com segmento e contexto.
+oportunidade: 1 frase com produto ARclad específico que resolve dor real do cliente (12-18 palavras), SEM prazos.`,
         messages,
       }),
     })
@@ -113,22 +151,91 @@ oportunidade: 1 frase ESPECÍFICA citando produto ARclad concreto que resolve a 
       parsed = JSON.parse(jsonText)
     } catch(e) {
       const m = jsonText.match(/\{[\s\S]*\}/)
-      if (m) {
-        try { parsed = JSON.parse(m[0]) } catch(e2) {}
-      }
+      if (m) { try { parsed = JSON.parse(m[0]) } catch(e2) {} }
     }
 
+    // 🛡️ CAMADA DE PROTEÇÃO: filtros banidos
     if (parsed && typeof parsed === 'object' && parsed.oportunidade) {
+      const oport = parsed.oportunidade
+      const bannedPatterns = [
+        /wash[\s-]?off/i,
+        /garrafa\s*pet/i,
+        /\bpet\b/i,
+        /recicl/i,
+        /sustent/i,         // banido genérico — fallback usa oportunidade específica para sustentável
+        /\bvinil\b/i,
+        /\bpsa\b/i,
+        /48\s*h/i,
+        /48\s*horas/i,
+        /24\s*h/i,
+        /24\s*horas/i,
+        /entrega\s+r[áa]pida/i,
+        /entrega\s+[áa]gil/i,
+        /prazo\s+curto/i,
+        /projetos?\s+pdv/i,
+        /substratos?\s+t[eé]rmico/i,
+        /t[eé]rmicos?\s+arclad/i,
+        /food[\s-]?safe/i,
+        /hot\s*stamp/i,
+        /liner\s+siliconado/i,
+        /liner\s+kraft/i,
+        /liner\s+glassine/i,
+        /kraft\s+e\s+glassine/i,
+        /glassine\s+e\s+kraft/i,
+        /kraft\s+ou\s+glassine/i,
+      ]
+      
+      const hasBanned = bannedPatterns.some(rx => rx.test(oport))
+      
+      if (hasBanned) {
+        console.log('🛡️ Oportunidade bloqueada — substituindo por segura baseada em segmento')
+        const msgContent = JSON.stringify(messages).toLowerCase()
+        
+        let safeOpp = 'Portfólio ARclad de materiais autoadesivos com suporte técnico especializado'
+
+        // Sustentável = aposta da matriz → temperatura quente + oportunidade específica
+        const isSustentavel = msgContent.includes('sustent') || msgContent.includes('linhas especiais')
+
+        if (isSustentavel) {
+          safeOpp = 'Linha de materiais sustentáveis ARclad para embalagens com apelo ambiental e certificação'
+          parsed.temperatura = 'quente'
+          parsed.prioridade = 'Alta'
+        } else if (msgContent.includes('marca') || msgContent.includes('indústria') || msgContent.includes('industria')) {
+          if (msgContent.includes('couché') || msgContent.includes('couche')) {
+            safeOpp = 'Couché brilho e fosco ARclad com excelente custo-benefício para rótulos da sua marca'
+          } else if (msgContent.includes('bopp')) {
+            safeOpp = 'Linha BOPP ARclad — brilhante, fosco e metalizado — para rótulos premium da sua marca'
+          } else {
+            safeOpp = 'Portfólio ARclad de BOPP e Couché ideais para rótulos e embalagens da sua marca'
+          }
+        } else if (msgContent.includes('agência') || msgContent.includes('agencia') || msgContent.includes('marketing')) {
+          safeOpp = 'Couché premium e laminados especiais ARclad para campanhas e materiais promocionais de impacto'
+        } else if (msgContent.includes('distribuidor')) {
+          safeOpp = 'Portfólio completo ARclad — BOPP, Couché, PET, térmicos — com margens competitivas para revenda'
+        } else if (msgContent.includes('gráfica') || msgContent.includes('grafica') || msgContent.includes('convertedor')) {
+          if (msgContent.includes('bopp')) {
+            safeOpp = 'Linha BOPP ARclad com qualidade consistente para impressão flexográfica de rótulos'
+          } else if (msgContent.includes('couché') || msgContent.includes('couche')) {
+            safeOpp = 'Couché ARclad em diferentes gramaturas com qualidade consistente para impressão flexográfica'
+          } else {
+            safeOpp = 'Portfólio ARclad de materiais para impressão com consultoria técnica especializada'
+          }
+        }
+        
+        parsed.oportunidade = safeOpp
+      }
+      
       return res.status(200).json({ text: JSON.stringify(parsed) })
-    } else {
-      return res.status(200).json({ text: JSON.stringify({
-        perfil: 'Visitante com interesse em explorar portfólio',
-        oportunidade: 'Portfólio completo de BOPP, Couché e autoadesivos com suporte técnico especializado ARclad',
-        temperatura: 'morno',
-        nivel: 'Iniciante',
-        prioridade: 'Media'
-      }) })
     }
+
+    // Fallback se parsing falhar
+    return res.status(200).json({ text: JSON.stringify({
+      perfil: 'Visitante com interesse em explorar portfólio',
+      oportunidade: 'Portfólio ARclad de BOPP, Couché e autoadesivos com suporte técnico especializado',
+      temperatura: 'morno',
+      nivel: 'Iniciante',
+      prioridade: 'Media'
+    }) })
   } catch (error) {
     console.error('Chat API error:', error)
     return res.status(200).json({ text: JSON.stringify({
