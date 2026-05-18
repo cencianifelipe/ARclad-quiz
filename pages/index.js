@@ -266,15 +266,25 @@ export default function App() {
   const exportExcel = async () => {
     if (!leads.length) { alert('Nenhum lead para exportar.'); return }
 
-    // Carregar SheetJS dinamicamente
-    const XLSX = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs')
+    // Carregar SheetJS via script tag (compatível com Next.js)
+    const loadXLSX = () => new Promise((resolve, reject) => {
+      if (window.XLSX) { resolve(window.XLSX); return }
+      const script = document.createElement('script')
+      script.src = 'https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
+      script.onload = () => resolve(window.XLSX)
+      script.onerror = reject
+      document.head.appendChild(script)
+    })
+
+    let XLSX
+    try { XLSX = await loadXLSX() }
+    catch(e) { alert('Erro ao carregar biblioteca Excel. Verifique sua conexão.'); return }
 
     const tM = {quente:'🔥 Quente', morno:'⛅ Morno', frio:'❄️ Frio'}
     const pM = {Alta:'🔴 Alta', Media:'🟡 Média', Baixa:'🟢 Baixa'}
     const aM = {ja_cliente:'✅ Já cliente', conhecia:'👀 Conhecia', ouviu_falar:'👂 Ouviu falar', nao_conhecia:'🆕 Conheceu na feira'}
     const nM = {otimo:'😊 Ótimo', neutro:'😐 Neutro', ruim:'😞 Ruim'}
 
-    // Ordenar: quente → morno → frio
     const order = {quente:0, morno:1, frio:2}
     const sorted = [...leads].sort((a,b) => (order[a.temperatura]||2) - (order[b.temperatura]||2))
 
@@ -285,82 +295,69 @@ export default function App() {
     const followupRows = sorted.map(l => [
       pM[l.prioridade_followup]||l.prioridade_followup||'-',
       tM[l.temperatura]||'-',
-      l.nome||'-',
-      l.empresa||'-',
-      l.cargo||'-',
-      l.whatsapp||'-',
-      l.email||'-',
-      l.segmento||'-',
-      l.materiais||'-',
-      l.desafio||'-',
-      l.timing||'-',
-      l.oportunidade||'-',
-      l.nivel_tecnico||'-',
+      l.nome||'-', l.empresa||'-', l.cargo||'-', l.whatsapp||'-', l.email||'-',
+      l.segmento||'-', l.materiais||'-', l.desafio||'-', l.timing||'-',
+      l.oportunidade||'-', l.nivel_tecnico||'-',
       aM[l.conhecia_arclad]||l.conhecia_arclad||'-',
       nM[l.nps]||l.nps||'-',
       l.created_at ? new Date(l.created_at).toLocaleDateString('pt-BR') : '-',
     ])
     const ws1 = XLSX.utils.aoa_to_sheet([followupHeaders, ...followupRows])
     ws1['!cols'] = [10,12,22,22,16,16,24,20,22,24,20,38,12,18,10,12].map(w=>({wch:w}))
-    XLSX.utils.book_append_sheet(wb, ws1, '🔥 Followup')
+    XLSX.utils.book_append_sheet(wb, ws1, 'Followup')
 
     // ── ABA 2: Dados Completos ────────────────────────────
-    const dadosHeaders = ['NOME','EMPRESA','CARGO','WHATSAPP','E-MAIL','PAÍS','FEIRA','SEGMENTO','FATURAMENTO','SKUs','MATERIAL','SUPORTE ATUAL','MOTIVO SUPORTE RUIM','DESAFIO','GATILHO TROCA','TIMING','TEMPERATURA','PRIORIDADE','NÍVEL','OPORTUNIDADE ARclad','CONHECIA ARclad','ATRAÇÃO STAND','NPS','DATA']
+    const dadosHeaders = ['NOME','EMPRESA','CARGO','WHATSAPP','E-MAIL','PAÍS','FEIRA','SEGMENTO','FATURAMENTO','SKUs','MATERIAL','SUPORTE ATUAL','MOTIVO SUPORTE','DESAFIO','GATILHO TROCA','TIMING','TEMPERATURA','PRIORIDADE','NÍVEL','OPORTUNIDADE ARclad','CONHECIA ARclad','ATRAÇÃO STAND','NPS','DATA']
     const dadosRows = leads.map(l => [
       l.nome||'-', l.empresa||'-', l.cargo||'-', l.whatsapp||'-', l.email||'-',
-      l.pais||'BR', l.feira||'-',
-      l.segmento||'-', l.faturamento||'-', l.skus||'-', l.materiais||'-',
-      l.suporte_fornecedor||'-', l.motivo_suporte||'-',
+      l.pais||'BR', l.feira||'-', l.segmento||'-', l.faturamento||'-', l.skus||'-',
+      l.materiais||'-', l.suporte_fornecedor||'-', l.motivo_suporte||'-',
       l.desafio||'-', l.gatilho_compra||'-', l.timing||'-',
       tM[l.temperatura]||'-', pM[l.prioridade_followup]||'-', l.nivel_tecnico||'-',
-      l.oportunidade||'-',
-      aM[l.conhecia_arclad]||l.conhecia_arclad||'-', l.atracao_stand||'-',
-      nM[l.nps]||l.nps||'-',
+      l.oportunidade||'-', aM[l.conhecia_arclad]||l.conhecia_arclad||'-',
+      l.atracao_stand||'-', nM[l.nps]||l.nps||'-',
       l.created_at ? new Date(l.created_at).toLocaleString('pt-BR') : '-',
     ])
     const ws2 = XLSX.utils.aoa_to_sheet([dadosHeaders, ...dadosRows])
     ws2['!cols'] = [22,22,16,16,24,8,20,20,22,14,22,16,24,24,24,24,14,12,12,38,18,20,10,18].map(w=>({wch:w}))
-    XLSX.utils.book_append_sheet(wb, ws2, '📊 Dados Completos')
+    XLSX.utils.book_append_sheet(wb, ws2, 'Dados Completos')
 
-    // ── ABA 3: Resumo Executivo ───────────────────────────
+    // ── ABA 3: Resumo ─────────────────────────────────────
     const quentes = leads.filter(l=>l.temperatura==='quente')
     const mornos  = leads.filter(l=>l.temperatura==='morno')
     const frios   = leads.filter(l=>l.temperatura==='frio')
-    const comWpp  = leads.filter(l=>l.whatsapp)
-    const altas   = leads.filter(l=>l.prioridade_followup==='Alta')
     const segs    = {}; leads.forEach(l=>{if(l.segmento)segs[l.segmento]=(segs[l.segmento]||0)+1})
-    const awMap   = {}; leads.forEach(l=>{if(l.conhecia_arclad){const k=aM[l.conhecia_arclad]||l.conhecia_arclad; awMap[k]=(awMap[k]||0)+1}})
-    const npsMap  = {}; leads.forEach(l=>{if(l.nps){const k=nM[l.nps]||l.nps; npsMap[k]=(npsMap[k]||0)+1}})
+    const awCnt   = {}; leads.forEach(l=>{if(l.conhecia_arclad){const k=aM[l.conhecia_arclad]||l.conhecia_arclad; awCnt[k]=(awCnt[k]||0)+1}})
+    const npsCnt  = {}; leads.forEach(l=>{if(l.nps){const k=nM[l.nps]||l.nps; npsCnt[k]=(npsCnt[k]||0)+1}})
 
-    const resumoData = [
+    const resumo = [
       [`ARclad — Resumo Executivo · ${fairName}`],
       [],
-      ['📊 MÉTRICAS GERAIS',''],
+      ['MÉTRICAS GERAIS',''],
       ['Total de leads', leads.length],
-      ['🔥 Quentes', quentes.length],
-      ['⛅ Mornos', mornos.length],
-      ['❄️ Frios', frios.length],
-      ['📱 Com WhatsApp', comWpp.length],
-      ['🔴 Prioridade Alta', altas.length],
+      ['Quentes', quentes.length],
+      ['Mornos', mornos.length],
+      ['Frios', frios.length],
+      ['Com WhatsApp', leads.filter(l=>l.whatsapp).length],
+      ['Prioridade Alta', leads.filter(l=>l.prioridade_followup==='Alta').length],
       [],
-      ['🏢 POR SEGMENTO',''],
+      ['POR SEGMENTO',''],
       ...Object.entries(segs).sort((a,b)=>b[1]-a[1]).map(([k,v])=>[k,v]),
       [],
-      ['👁️ BRAND AWARENESS ARclad',''],
-      ...Object.entries(awMap).sort((a,b)=>b[1]-a[1]).map(([k,v])=>[k,v]),
+      ['BRAND AWARENESS ARclad',''],
+      ...Object.entries(awCnt).sort((a,b)=>b[1]-a[1]).map(([k,v])=>[k,v]),
       [],
-      ['😊 NPS (FEEDBACK)',''],
-      ...Object.entries(npsMap).map(([k,v])=>[k,v]),
+      ['NPS (FEEDBACK)',''],
+      ...Object.entries(npsCnt).map(([k,v])=>[k,v]),
       [],
-      ['🔥 FOLLOWUP URGENTE (QUENTES)','',''],
+      ['FOLLOWUP URGENTE (QUENTES)','',''],
       ['Nome','WhatsApp','Oportunidade'],
       ...quentes.map(l=>[l.nome, l.whatsapp, l.oportunidade]),
     ]
-    const ws3 = XLSX.utils.aoa_to_sheet(resumoData)
+    const ws3 = XLSX.utils.aoa_to_sheet(resumo)
     ws3['!cols'] = [{wch:32},{wch:14},{wch:45}]
-    XLSX.utils.book_append_sheet(wb, ws3, '📈 Resumo')
+    XLSX.utils.book_append_sheet(wb, ws3, 'Resumo')
 
-    // Download
     const fname = `ARclad_Leads_${(fairName||'Feira').replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`
     XLSX.writeFile(wb, fname)
   }
