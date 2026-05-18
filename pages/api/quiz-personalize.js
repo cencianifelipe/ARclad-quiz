@@ -107,16 +107,36 @@ Gere 9 perguntas em JSON puro. Para Q8 escolha UM tema da lista do segmento — 
       }
     }
 
-    // 🛡️ CAMADA DE PROTEÇÃO: se mesmo assim a IA mencionar wash-off, usar fallback
+    // 🛡️ CAMADA DE PROTEÇÃO REFORÇADA
     if (parsed && Array.isArray(parsed.questions) && parsed.questions.length >= 8) {
-      const serialized = JSON.stringify(parsed.questions).toLowerCase()
-      const bannedWords = ['wash-off', 'washoff', 'wash off', 'reciclagem', 'pet', 'reciclável', 'reciclavel', 'sustentável', 'sustentavel', 'sustentabilidade']
-      const hasBanned = bannedWords.some(w => serialized.includes(w))
+      const bannedPatterns = [
+        /wash[\s-]?off/i,
+        /garrafa\s*pet/i,
+        /\bpet\b/i,
+        /recicl/i,
+        /sustent/i,
+        /\bvinil\b/i,
+        /\bpsa\b/i,
+      ]
       
-      if (!hasBanned) {
-        return res.status(200).json({ questions: parsed.questions })
-      } else {
-        console.log('🛡️ Resposta da IA bloqueada por conter termo banido — usando fallback')
+      // Verificar cada pergunta individualmente
+      let hasAnyBanned = false
+      const cleanQuestions = parsed.questions.map((q, idx) => {
+        if (!q) return null
+        const qText = JSON.stringify(q)
+        const isBanned = bannedPatterns.some(rx => rx.test(qText))
+        if (isBanned) {
+          console.log(`🛡️ Pergunta ${idx} (id:${q.id}) bloqueada — substituindo`)
+          hasAnyBanned = true
+          // Pegar a pergunta segura equivalente do fallback
+          const fallback = getDefaultQuestions(segmento)
+          return fallback.find(fq => String(fq.id) === String(q.id)) || q
+        }
+        return q
+      }).filter(Boolean)
+      
+      if (cleanQuestions.length >= 8) {
+        return res.status(200).json({ questions: cleanQuestions })
       }
     }
 
