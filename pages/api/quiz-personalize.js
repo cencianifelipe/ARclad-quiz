@@ -33,7 +33,10 @@ Q4 — Brand awareness (fixa para todos):
 Opções: ["Já sou cliente","Conhecia mas nunca comprei","Já ouvi falar","Conheci aqui na feira hoje"]
 
 Q5 — Motivação (adapte ao segmento)
-Q6 — Material principal usado (adapte ao segmento)
+Q6 — Material principal: OBRIGATÓRIO usar EXATAMENTE estas 4 opções para TODOS os segmentos, sem alterar:
+  {"id":"6","q":"Qual material você mais compra hoje?","opts":["BOPP (brilho, fosco, metalizado)","Couché (brilho ou fosco)","Térmico (direto ou transfer)","Linhas especiais (PET, sustentáveis)"],"r":null}
+Q6b — Qual linha especial? OBRIGATÓRIO incluir com condicional6b:true:
+  {"id":"6b","q":"Qual linha especial te interessa?","opts":["PET / Poliéster","BOPP especial / metalizado","Térmico especial","Sustentável"],"r":null,"condicional6b":true}
 Q7 — Avaliação do suporte (fixa): ["Excelente","Razoável","Ruim","Não tenho suporte"]
 Q7b — Por que suporte não é excelente ("condicional":true)
 Q8 — TÉCNICA (escolha um dos temas autorizados abaixo)
@@ -50,10 +53,10 @@ C) Por que térmico direto não precisa de ribbon
 D) Gramatura ideal de Couché para impressão flexográfica
 
 🏭 MARCA — escolha UM destes:
-A) BOPP brilho vs BOPP fosco (diferença visual e aplicação)
-B) Por que rótulos para congelados precisam adesivo especial
+A) BOPP brilho vs BOPP fosco (diferença visual e aplicação — ideal para premium/gourmet)
+B) BOPP para congelados — qual característica diferencia (resposta: adesivo especial para baixa temperatura)
 C) Vantagem do Couché fosco para visual premium
-D) Quando usar BOPP transparente vs branco
+D) Quando usar BOPP transparente vs branco (no-label look)
 
 🎨 AGÊNCIA — escolha UM destes:
 A) Qual Couché é ideal para acabamento premium em PDV
@@ -118,25 +121,34 @@ Gere 9 perguntas em JSON puro. Para Q8 escolha UM tema da lista do segmento — 
         /\bvinil\b/i,
         /\bpsa\b/i,
       ]
-      
-      // Verificar cada pergunta individualmente
-      let hasAnyBanned = false
-      const cleanQuestions = parsed.questions.map((q, idx) => {
+
+      // Forçar Q6 e Q6b corretos — independente do que a IA gerou
+      const Q6_FIXED = {"id":"6","bloco":"Sobre você e seu negócio","q":"Qual material você mais compra hoje?","opts":["BOPP (brilho, fosco, metalizado)","Couché (brilho ou fosco)","Térmico (direto ou transfer)","Linhas especiais (PET, sustentáveis)"],"r":null}
+      const Q6B_FIXED = {"id":"6b","bloco":"Sobre você e seu negócio","q":"Qual linha especial te interessa?","opts":["PET / Poliéster","BOPP especial / metalizado","Térmico especial","Sustentável"],"r":null,"condicional6b":true}
+
+      let questions = parsed.questions.map(q => {
         if (!q) return null
+        if (String(q.id) === '6') return Q6_FIXED   // sempre substituir Q6
+        if (String(q.id) === '6b') return Q6B_FIXED // sempre substituir Q6b
+        // verificar banidos nas demais
         const qText = JSON.stringify(q)
         const isBanned = bannedPatterns.some(rx => rx.test(qText))
         if (isBanned) {
-          console.log(`🛡️ Pergunta ${idx} (id:${q.id}) bloqueada — substituindo`)
-          hasAnyBanned = true
-          // Pegar a pergunta segura equivalente do fallback
           const fallback = getDefaultQuestions(segmento)
           return fallback.find(fq => String(fq.id) === String(q.id)) || q
         }
         return q
       }).filter(Boolean)
-      
-      if (cleanQuestions.length >= 8) {
-        return res.status(200).json({ questions: cleanQuestions })
+
+      // Garantir que Q6b existe na lista
+      const hasQ6b = questions.some(q => String(q.id) === '6b')
+      if (!hasQ6b) {
+        const q6idx = questions.findIndex(q => String(q.id) === '6')
+        if (q6idx >= 0) questions.splice(q6idx + 1, 0, Q6B_FIXED)
+      }
+
+      if (questions.length >= 8) {
+        return res.status(200).json({ questions })
       }
     }
 
@@ -153,7 +165,7 @@ function getDefaultQuestions(segmento) {
   let q8
 
   if (seg.includes('marca') || seg.includes('indústria') || seg.includes('industria')) {
-    q8 = {"id":"8","bloco":"Pergunta técnica","q":"Para rótulos de produtos congelados, qual característica do adesivo é essencial?","opts":["Adesivo padrão para uso geral","Adesivo permanente comum","Adesivo especial para baixa temperatura","Adesivo removível"],"r":2,"feedback":"Adesivos especiais para baixa temperatura mantêm a fixação mesmo em ambientes frios."}
+    q8 = {"id":"8","bloco":"Pergunta técnica","q":"Qual a diferença principal entre BOPP brilhante e BOPP fosco para rótulos?","opts":["São idênticos, só mudam na impressão","Brilhante reflete mais luz, fosco tem visual premium e sofisticado","Fosco é mais resistente a rasgos","Brilhante é mais barato sempre"],"r":1,"feedback":"BOPP brilhante maximiza impacto visual com reflexo. BOPP fosco transmite sofisticação e premium — ideal para vinhos, cosméticos e gourmet."}
   } else if (seg.includes('agência') || seg.includes('agencia') || seg.includes('marketing')) {
     q8 = {"id":"8","bloco":"Pergunta técnica","q":"Para um material com acabamento premium em PDV, qual papel é ideal?","opts":["Sulfite comum","Kraft natural","Couché revestido com gramatura adequada","Papel jornal"],"r":2,"feedback":"Couché revestido com gramatura adequada oferece o acabamento premium ideal para PDV."}
   } else if (seg.includes('distribuidor')) {
@@ -166,7 +178,8 @@ function getDefaultQuestions(segmento) {
   return [
     {"id":"4","bloco":"Sobre você e seu negócio","q":"Como você chegou até a ARclad?","opts":["Já sou cliente","Conhecia mas nunca comprei","Já ouvi falar","Conheci aqui na feira hoje"],"r":null},
     {"id":"5","bloco":"Sobre você e seu negócio","q":"O que te trouxe ao nosso stand?","opts":["Buscar novos materiais","Avaliar suporte técnico","Indicação de parceiro","Conhecer o portfólio"],"r":null},
-    {"id":"6","bloco":"Sobre você e seu negócio","q":"Qual material você mais compra/utiliza hoje?","opts":["BOPP ou filmes plásticos","Papel Couché ou revestido","Substratos térmicos","Material autoadesivo (liner + facestock + adesivo)"],"r":null},
+    {"id":"6","bloco":"Sobre você e seu negócio","q":"Qual material você mais compra/utiliza hoje?","opts":["BOPP (brilho, fosco, metalizado)","Couché (brilho ou fosco)","Térmico (direto ou transfer)","Linhas especiais (PET, sustentáveis)"],"r":null},
+    {"id":"6b","bloco":"Sobre você e seu negócio","q":"Qual linha especial te interessa?","opts":["PET / Poliéster","BOPP especial / metalizado","Térmico especial","Sustentável"],"r":null,"condicional6b":true},
     {"id":"7","bloco":"Sobre você e seu negócio","q":"Como avalia o suporte técnico do seu fornecedor atual?","opts":["Excelente","Razoável","Ruim","Não tenho suporte"],"r":null},
     {"id":"7b","bloco":"Sobre você e seu negócio","q":"Por que o suporte não é excelente?","opts":["Demora para responder","Não conhece bem os materiais","Não resolve problemas técnicos","Não oferece suporte proativo"],"r":null,"condicional":true},
     q8,
