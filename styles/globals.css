@@ -1,19 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400&display=swap');
+
+/* ═══════════════════════════════════════
+   ARclad Brandbook — Pantone Oficial
+   ═══════════════════════════════════════
+   PANTONE 2423 C  → #00B22B  (verde primário)
+   PANTONE 2217 C  → #003232  (verde escuro)
+   PANTONE 2297 C  → #C9FF1F  (lima vibrante)
+   PANTONE 2270 C  → #33FC5C  (verde menta)
+   PANTONE 656 C   → #E9E9E9  (cinza claro)
+   PANTONE Negro   → #000000
+   Branco          → #FFFFFF
+   ═══════════════════════════════════════ */
 
 :root {
-  --lime:     #C8F500;
-  --mint:     #00E676;
-  --navy:     #0D1F5C;
-  --bg:       #053D32;
-  --card:     #083D30;
-  --sf:       #062E25;
-  --sf2:      #073329;
+  --brand-green:  #00B22B;
+  --brand-dark:   #003232;
+  --brand-lime:   #C9FF1F;
+  --brand-mint:   #33FC5C;
+  --brand-gray:   #E9E9E9;
+  --brand-black:  #000000;
+  --brand-white:  #FFFFFF;
+
+  /* UI tokens */
+  --bg:       #003232;
+  --card:     #004040;
+  --sf:       #002828;
+  --sf2:      #003838;
   --text:     #FFFFFF;
-  --text-sec: #E0F2EE;
-  --muted:    #5A9A8A;
-  --white:    #FFFFFF;
-  --red:      #F87171;
-  --border:   rgba(200,245,0,.12);
+  --text-sec: #CCEECC;
+  --muted:    #6BAE8A;
+  --border:   rgba(201,255,31,.14);
+  --red:      #FF5555;
 }
 
 *, *::before, *::after {
@@ -24,21 +41,23 @@
 }
 
 html, body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter', sans-serif;
+  font-optical-sizing: auto;
   background: var(--bg);
   color: var(--text-sec);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv11','ss01';
 }
 
-select, input, button, textarea {
+*, input, button, select, textarea {
   font-family: 'Inter', sans-serif;
 }
 
 select {
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235A9A8A' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236BAE8A' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
   padding-right: 36px !important;
