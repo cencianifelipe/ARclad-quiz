@@ -1,4 +1,4 @@
-// pages/api/chat.js — Análise final · SEM menção a wash-off
+// pages/api/chat.js — Análise final · Oportunidade COMERCIAL (não técnica)
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
   const { messages } = req.body
@@ -25,71 +25,88 @@ Formato exato:
 🚫🚫🚫 PALAVRAS BANIDAS — NUNCA mencione 🚫🚫🚫
 - "wash-off" / "washoff" / "wash off"
 - "garrafa PET" / "PET reciclável"
-- "reciclagem" / "reciclável" / "reciclavel"
+- "reciclagem" / "reciclável"
 - "sustentabilidade" / "sustentável"
 - "vinil" / "PSA"
+- "entrega 48h" / "entrega em 48 horas" / "entrega rápida" (a ARclad não cumpre prazos curtos)
+- Qualquer promessa de prazo específico em horas/dias
 
-Se mencionar qualquer destes, a resposta será rejeitada.
+═══ REGRA FUNDAMENTAL — O QUE É "OPORTUNIDADE" ═══
 
-═══ PORTFÓLIO ARclad PARA GERAR OPORTUNIDADES ═══
+⚠️ ATENÇÃO: A "oportunidade" é uma RECOMENDAÇÃO COMERCIAL — qual material/solução ARclad o visitante deveria considerar comprar.
 
-📦 BOPP (filmes plásticos):
-- BOPP brilhante / fosco — rótulos premium, embalagens flexíveis
-- BOPP metalizado — efeito visual diferenciado
-- BOPP transparente — cosméticos e bebidas
+❌ A oportunidade NÃO é o tema da pergunta técnica (Q8).
+❌ Se a Q8 perguntou sobre adesivo para congelados, isso NÃO significa que o cliente precisa de material para congelados.
+❌ A pergunta técnica é só um teste de conhecimento — IGNORE o tema dela ao gerar a oportunidade.
 
-📄 Couché (papéis revestidos):
-- Couché brilho — rótulos comerciais, PDV
-- Couché fosco — visual premium, vinhos, gourmet
-- Couché para impressão digital — tiragens curtas
+✅ A oportunidade vem APENAS de:
+1. SEGMENTO (Q1) — quem é o cliente
+2. MATERIAL ATUAL (Q6) — o que ele já compra
+3. DESAFIO (Q9) — qual a dor real
+4. GATILHO DE TROCA (Q10) — o que faria ele mudar de fornecedor
+5. TIMING (Q11) — quando precisa
 
-🏷️ Materiais autoadesivos (facestock + adesivo + liner siliconado):
-- Liner kraft amarelo — uso geral, alta produtividade
-- Liner glassine — etiquetas finas, impressão de alta qualidade
-- Adesivo permanente — fixação definitiva
-- Adesivo removível — promoções, eventos
-- Adesivo para congelados — baixa temperatura
+═══ PORTFÓLIO ARclad ═══
 
-🌡️ Substratos térmicos:
-- Térmico direto — etiquetas logísticas, balanças
-- Térmico transfer — códigos de barras industriais
-- Térmico congelados — cadeia fria
+📦 BOPP: brilhante, fosco, metalizado, transparente
+📄 Couché: brilho, fosco, para impressão digital
+🏷️ Materiais autoadesivos: liner kraft, liner glassine, adesivo permanente, adesivo removível, adesivo para baixa temperatura
+🌡️ Térmicos: direto, transfer, para cadeia fria
+🎨 Laminação: brilho, fosca, especiais
+🔵 Silicone
 
-═══ COMO GERAR OPORTUNIDADE (sempre concreta) ═══
+═══ COMO GERAR OPORTUNIDADE CORRETA ═══
 
-Combine SEGMENTO + MATERIAL ATUAL + DESAFIO + TIMING.
+A oportunidade deve mencionar:
+- O MATERIAL ARclad que resolve a dor (não o tema da Q8!)
+- O BENEFÍCIO que conecta com o desafio do cliente
 
-🖨️ GRÁFICA + dor de prazo → "BOPP brilhante e fosco ARclad com estoque garantido e entrega 48h"
-🖨️ GRÁFICA + dor de suporte → "Materiais autoadesivos com liner adequado ao seu maquinário e suporte técnico especializado"
-🖨️ GRÁFICA + Couché → "Couché brilho e fosco ARclad para impressão flexográfica de alta qualidade"
+EXEMPLOS CORRETOS:
 
-🏭 MARCA + busca valorização → "Couché premium e BOPP fosco para rótulos que destacam sua marca no PDV"
-🏭 MARCA + congelados → "Materiais autoadesivos com adesivo especial para baixa temperatura"
-🏭 MARCA + cosméticos → "BOPP transparente e Couché brilho para destaque visual de produtos premium"
+🖨️ Gráfica + Q6:autoadesivo + Q9:suporte fraco + Q10:suporte especializado
+→ "Materiais autoadesivos ARclad com liner kraft ou glassine e consultoria técnica especializada para sua produção"
 
-🎨 AGÊNCIA + PDV → "Couché premium e laminados especiais para campanhas de alto impacto"
-🎨 AGÊNCIA + campanhas temporárias → "Materiais autoadesivos com adesivo removível ideais para promoções"
+🖨️ Gráfica + Q6:BOPP + Q9:falta variedade + Q10:qualidade
+→ "Linha completa BOPP ARclad — brilhante, fosco e metalizado — com qualidade consistente para rótulos premium"
 
-📦 DISTRIBUIDOR → "Portfólio completo BOPP + Couché + térmicos com margens competitivas e exclusividade regional"
-📦 DISTRIBUIDOR + cliente final → "Suporte técnico ARclad consultivo para você atender melhor seus clientes"
+🏭 Marca + Q6:autoadesivo + Q9:prazo
+→ "Materiais autoadesivos ARclad com disponibilidade ampla de estoque e relacionamento direto"
+
+🏭 Marca + Q6:Couché + Q9:preço alto + Q10:qualidade
+→ "Couché brilho e fosco ARclad com excelente custo-benefício para rótulos comerciais"
+
+🎨 Agência + Q6:autoadesivo + Q10:variedade
+→ "Portfólio amplo de materiais autoadesivos ARclad com laminados e acabamentos especiais para campanhas"
+
+🎨 Agência + Q6:Couché + Q9:variedade
+→ "Couché premium ARclad em brilho e fosco com diferentes gramaturas para PDV e materiais promocionais"
+
+📦 Distribuidor + Q9:portfólio + Q10:qualidade
+→ "Portfólio completo ARclad — BOPP, Couché, autoadesivos e térmicos — com margens competitivas para revenda"
+
+📦 Distribuidor + Q9:suporte fraco
+→ "Parceria ARclad com suporte técnico consultivo para você atender melhor seus clientes finais"
 
 ═══ REGRAS DE QUALIDADE ═══
 
-❌ Nunca seja genérico ("soluções customizadas", "produtos de qualidade")
+❌ Nunca seja genérico ("soluções customizadas", "produtos de qualidade", "atendimento diferenciado")
+❌ Nunca prometa prazos específicos (48h, 24h, "rápida", "ágil")
+❌ Nunca recomende baseado no tema da Q8 (pergunta técnica)
 ✅ Sempre cite produto ARclad concreto que resolve a dor real
+✅ Sempre conecte com o material atual (Q6) e desafio (Q9)
 
 ═══ CLASSIFICAÇÃO ═══
 
 temperatura:
-- "quente" = projeto concreto + insatisfação atual + faturamento médio/alto
-- "morno" = interesse claro mas sem urgência
-- "frio" = apenas explorando
+- "quente" = projeto concreto (Q11=A/B) + insatisfação clara (Q7=C/D ou Q9 com dor forte)
+- "morno" = interesse claro mas sem urgência (Q11=C)
+- "frio" = apenas explorando (Q11=D)
 
 nivel: "Iniciante" / "Tecnico" / "Especialista"
 prioridade: "Alta" / "Media" / "Baixa"
 
 perfil: 1 frase descrevendo o visitante (10-15 palavras), com segmento e contexto.
-oportunidade: 1 frase ESPECÍFICA citando produto ARclad concreto (12-18 palavras).`,
+oportunidade: 1 frase com produto ARclad específico que resolve dor real do cliente (12-18 palavras), SEM prazos.`,
         messages,
       }),
     })
@@ -111,25 +128,63 @@ oportunidade: 1 frase ESPECÍFICA citando produto ARclad concreto (12-18 palavra
       if (m) { try { parsed = JSON.parse(m[0]) } catch(e2) {} }
     }
 
-    // 🛡️ CAMADA DE PROTEÇÃO: se a IA mencionar palavras banidas, substituir oportunidade
+    // 🛡️ CAMADA DE PROTEÇÃO: filtros banidos
     if (parsed && typeof parsed === 'object' && parsed.oportunidade) {
-      const oport = parsed.oportunidade.toLowerCase()
-      const bannedWords = ['wash-off', 'washoff', 'wash off', 'garrafa pet', 'pet recicl', 'reciclagem', 'reciclável', 'reciclavel', 'sustentável', 'sustentavel', 'sustentabilidade', 'vinil', 'psa']
-      const hasBanned = bannedWords.some(w => oport.includes(w))
+      const oport = parsed.oportunidade
+      const bannedPatterns = [
+        /wash[\s-]?off/i,
+        /garrafa\s*pet/i,
+        /\bpet\b/i,
+        /recicl/i,
+        /sustent/i,
+        /\bvinil\b/i,
+        /\bpsa\b/i,
+        /48\s*h/i,
+        /48\s*horas/i,
+        /24\s*h/i,
+        /24\s*horas/i,
+        /entrega\s+r[áa]pida/i,
+        /entrega\s+[áa]gil/i,
+        /prazo\s+curto/i,
+        /congelado/i, // não recomendar baseado em Q8 técnica
+      ]
+      
+      const hasBanned = bannedPatterns.some(rx => rx.test(oport))
       
       if (hasBanned) {
-        console.log('🛡️ Oportunidade bloqueada — substituindo por genérica segura')
-        // Substituir por oportunidade genérica segura baseada em palavra-chave nas messages
+        console.log('🛡️ Oportunidade bloqueada — substituindo por segura baseada em segmento')
         const msgContent = JSON.stringify(messages).toLowerCase()
-        if (msgContent.includes('marca') || msgContent.includes('indústria')) {
-          parsed.oportunidade = 'Couché premium e BOPP fosco ARclad para rótulos que destacam sua marca no PDV'
-        } else if (msgContent.includes('agência') || msgContent.includes('marketing')) {
-          parsed.oportunidade = 'Couché premium e laminados especiais ARclad para campanhas de alto impacto visual'
+        
+        // Determinar oportunidade segura baseada em segmento + material atual
+        let safeOpp = 'Portfólio ARclad de materiais autoadesivos com suporte técnico especializado'
+        
+        if (msgContent.includes('marca') || msgContent.includes('indústria') || msgContent.includes('industria')) {
+          if (msgContent.includes('couché') || msgContent.includes('couche')) {
+            safeOpp = 'Couché brilho e fosco ARclad com excelente custo-benefício para rótulos da sua marca'
+          } else if (msgContent.includes('bopp')) {
+            safeOpp = 'Linha BOPP ARclad — brilhante, fosco e metalizado — para rótulos premium da sua marca'
+          } else if (msgContent.includes('autoadesivo')) {
+            safeOpp = 'Materiais autoadesivos ARclad com portfólio completo e suporte consultivo para sua indústria'
+          } else {
+            safeOpp = 'Portfólio ARclad de BOPP e autoadesivos ideais para rótulos e embalagens da sua marca'
+          }
+        } else if (msgContent.includes('agência') || msgContent.includes('agencia') || msgContent.includes('marketing')) {
+          safeOpp = 'Couché premium e laminados especiais ARclad para campanhas e materiais promocionais de impacto'
         } else if (msgContent.includes('distribuidor')) {
-          parsed.oportunidade = 'Portfólio completo BOPP, Couché e térmicos ARclad com margens competitivas'
-        } else {
-          parsed.oportunidade = 'Materiais autoadesivos ARclad com suporte técnico especializado e entrega ágil'
+          safeOpp = 'Portfólio completo ARclad — BOPP, Couché, autoadesivos e térmicos — com margens competitivas para revenda'
+        } else if (msgContent.includes('gráfica') || msgContent.includes('grafica') || msgContent.includes('convertedor')) {
+          if (msgContent.includes('autoadesivo')) {
+            safeOpp = 'Materiais autoadesivos ARclad com liner kraft ou glassine e consultoria técnica para sua produção'
+          } else if (msgContent.includes('bopp')) {
+            safeOpp = 'Linha BOPP ARclad com qualidade consistente para impressão flexográfica de rótulos'
+          } else if (msgContent.includes('couché') || msgContent.includes('couche')) {
+            safeOpp = 'Couché ARclad em diferentes gramaturas com qualidade consistente para impressão flexográfica'
+          } else {
+            safeOpp = 'Portfólio ARclad de materiais para impressão com consultoria técnica especializada'
+          }
         }
+        
+        parsed.oportunidade = safeOpp
       }
       
       return res.status(200).json({ text: JSON.stringify(parsed) })
@@ -138,7 +193,7 @@ oportunidade: 1 frase ESPECÍFICA citando produto ARclad concreto (12-18 palavra
     // Fallback se parsing falhar
     return res.status(200).json({ text: JSON.stringify({
       perfil: 'Visitante com interesse em explorar portfólio',
-      oportunidade: 'Portfólio completo de BOPP, Couché e autoadesivos com suporte técnico ARclad',
+      oportunidade: 'Portfólio ARclad de BOPP, Couché e autoadesivos com suporte técnico especializado',
       temperatura: 'morno',
       nivel: 'Iniciante',
       prioridade: 'Media'
