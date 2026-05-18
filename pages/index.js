@@ -263,27 +263,106 @@ export default function App() {
     if (v.length===4) { if (v==='1234') { setShowPin(false); openAdmin() } else setPinVal('') }
   }
 
-  const exportCSV = () => {
-    if (!leads.length) { alert('Nenhum lead.'); return }
-    const tM={quente:'Quente',morno:'Morno',frio:'Frio'}
-    const aM={ja_cliente:'Ja cliente',conhecia:'Conhecia',ouviu_falar:'Ouviu falar',nao_conhecia:'Conheceu na feira'}
-    const headers=['DADOS PESSOAIS','Nome','Empresa','Cargo','WhatsApp','Email','CONTEXTO','Pais','Feira','Data','PERFIL IA','Segmento','Faturamento','SKUs','Materiais','FORNECEDOR','Suporte','Motivo suporte','DOR','Desafio','Gatilho','TIMING','Projeto','CLASSIFICACAO','Temperatura','Nivel','Oportunidade','Prioridade','BRAND AWARENESS','Conhecia','Atracao','FEEDBACK','NPS']
-    const rows = leads.map(l=>[
-      '',l.nome||'-',l.empresa||'-',l.cargo||'-',l.whatsapp||'-',l.email||'-',
-      '',l.pais||'-',l.feira||'-',l.created_at?new Date(l.created_at).toLocaleString('pt-BR'):'-',
-      '',l.segmento||'-',l.faturamento||'-',l.skus||'-',l.materiais||'-',
-      '',l.suporte_fornecedor||'-',l.motivo_suporte||'-',
-      '',l.desafio||'-',l.gatilho_compra||'-',
-      '',l.timing||'-',
-      '',tM[l.temperatura]||'-',l.nivel_tecnico||'-',l.oportunidade||'-',l.prioridade_followup||'-',
-      '',aM[l.conhecia_arclad]||l.conhecia_arclad||'-',l.atracao_stand||'-',
-      '',l.nps||'-',
-    ].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(','))
-    const csv='\uFEFF'+[headers.map(h=>`"${h}"`).join(','),...rows].join('\n')
-    const a=document.createElement('a')
-    a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv)
-    a.download=`ARclad_Leads_${(fairName||'Feira').replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`
-    a.click()
+  const exportExcel = async () => {
+    if (!leads.length) { alert('Nenhum lead para exportar.'); return }
+
+    // Carregar SheetJS dinamicamente
+    const XLSX = await import('https://cdn.sheetjs.com/xlsx-0.20.1/package/xlsx.mjs')
+
+    const tM = {quente:'🔥 Quente', morno:'⛅ Morno', frio:'❄️ Frio'}
+    const pM = {Alta:'🔴 Alta', Media:'🟡 Média', Baixa:'🟢 Baixa'}
+    const aM = {ja_cliente:'✅ Já cliente', conhecia:'👀 Conhecia', ouviu_falar:'👂 Ouviu falar', nao_conhecia:'🆕 Conheceu na feira'}
+    const nM = {otimo:'😊 Ótimo', neutro:'😐 Neutro', ruim:'😞 Ruim'}
+
+    // Ordenar: quente → morno → frio
+    const order = {quente:0, morno:1, frio:2}
+    const sorted = [...leads].sort((a,b) => (order[a.temperatura]||2) - (order[b.temperatura]||2))
+
+    const wb = XLSX.utils.book_new()
+
+    // ── ABA 1: Followup ──────────────────────────────────
+    const followupHeaders = ['PRIORIDADE','TEMPERATURA','NOME','EMPRESA','CARGO','WHATSAPP','E-MAIL','SEGMENTO','MATERIAL','DESAFIO','TIMING','OPORTUNIDADE ARclad','NÍVEL','CONHECIA ARclad','NPS','DATA']
+    const followupRows = sorted.map(l => [
+      pM[l.prioridade_followup]||l.prioridade_followup||'-',
+      tM[l.temperatura]||'-',
+      l.nome||'-',
+      l.empresa||'-',
+      l.cargo||'-',
+      l.whatsapp||'-',
+      l.email||'-',
+      l.segmento||'-',
+      l.materiais||'-',
+      l.desafio||'-',
+      l.timing||'-',
+      l.oportunidade||'-',
+      l.nivel_tecnico||'-',
+      aM[l.conhecia_arclad]||l.conhecia_arclad||'-',
+      nM[l.nps]||l.nps||'-',
+      l.created_at ? new Date(l.created_at).toLocaleDateString('pt-BR') : '-',
+    ])
+    const ws1 = XLSX.utils.aoa_to_sheet([followupHeaders, ...followupRows])
+    ws1['!cols'] = [10,12,22,22,16,16,24,20,22,24,20,38,12,18,10,12].map(w=>({wch:w}))
+    XLSX.utils.book_append_sheet(wb, ws1, '🔥 Followup')
+
+    // ── ABA 2: Dados Completos ────────────────────────────
+    const dadosHeaders = ['NOME','EMPRESA','CARGO','WHATSAPP','E-MAIL','PAÍS','FEIRA','SEGMENTO','FATURAMENTO','SKUs','MATERIAL','SUPORTE ATUAL','MOTIVO SUPORTE RUIM','DESAFIO','GATILHO TROCA','TIMING','TEMPERATURA','PRIORIDADE','NÍVEL','OPORTUNIDADE ARclad','CONHECIA ARclad','ATRAÇÃO STAND','NPS','DATA']
+    const dadosRows = leads.map(l => [
+      l.nome||'-', l.empresa||'-', l.cargo||'-', l.whatsapp||'-', l.email||'-',
+      l.pais||'BR', l.feira||'-',
+      l.segmento||'-', l.faturamento||'-', l.skus||'-', l.materiais||'-',
+      l.suporte_fornecedor||'-', l.motivo_suporte||'-',
+      l.desafio||'-', l.gatilho_compra||'-', l.timing||'-',
+      tM[l.temperatura]||'-', pM[l.prioridade_followup]||'-', l.nivel_tecnico||'-',
+      l.oportunidade||'-',
+      aM[l.conhecia_arclad]||l.conhecia_arclad||'-', l.atracao_stand||'-',
+      nM[l.nps]||l.nps||'-',
+      l.created_at ? new Date(l.created_at).toLocaleString('pt-BR') : '-',
+    ])
+    const ws2 = XLSX.utils.aoa_to_sheet([dadosHeaders, ...dadosRows])
+    ws2['!cols'] = [22,22,16,16,24,8,20,20,22,14,22,16,24,24,24,24,14,12,12,38,18,20,10,18].map(w=>({wch:w}))
+    XLSX.utils.book_append_sheet(wb, ws2, '📊 Dados Completos')
+
+    // ── ABA 3: Resumo Executivo ───────────────────────────
+    const quentes = leads.filter(l=>l.temperatura==='quente')
+    const mornos  = leads.filter(l=>l.temperatura==='morno')
+    const frios   = leads.filter(l=>l.temperatura==='frio')
+    const comWpp  = leads.filter(l=>l.whatsapp)
+    const altas   = leads.filter(l=>l.prioridade_followup==='Alta')
+    const segs    = {}; leads.forEach(l=>{if(l.segmento)segs[l.segmento]=(segs[l.segmento]||0)+1})
+    const awMap   = {}; leads.forEach(l=>{if(l.conhecia_arclad){const k=aM[l.conhecia_arclad]||l.conhecia_arclad; awMap[k]=(awMap[k]||0)+1}})
+    const npsMap  = {}; leads.forEach(l=>{if(l.nps){const k=nM[l.nps]||l.nps; npsMap[k]=(npsMap[k]||0)+1}})
+
+    const resumoData = [
+      [`ARclad — Resumo Executivo · ${fairName}`],
+      [],
+      ['📊 MÉTRICAS GERAIS',''],
+      ['Total de leads', leads.length],
+      ['🔥 Quentes', quentes.length],
+      ['⛅ Mornos', mornos.length],
+      ['❄️ Frios', frios.length],
+      ['📱 Com WhatsApp', comWpp.length],
+      ['🔴 Prioridade Alta', altas.length],
+      [],
+      ['🏢 POR SEGMENTO',''],
+      ...Object.entries(segs).sort((a,b)=>b[1]-a[1]).map(([k,v])=>[k,v]),
+      [],
+      ['👁️ BRAND AWARENESS ARclad',''],
+      ...Object.entries(awMap).sort((a,b)=>b[1]-a[1]).map(([k,v])=>[k,v]),
+      [],
+      ['😊 NPS (FEEDBACK)',''],
+      ...Object.entries(npsMap).map(([k,v])=>[k,v]),
+      [],
+      ['🔥 FOLLOWUP URGENTE (QUENTES)','',''],
+      ['Nome','WhatsApp','Oportunidade'],
+      ...quentes.map(l=>[l.nome, l.whatsapp, l.oportunidade]),
+    ]
+    const ws3 = XLSX.utils.aoa_to_sheet(resumoData)
+    ws3['!cols'] = [{wch:32},{wch:14},{wch:45}]
+    XLSX.utils.book_append_sheet(wb, ws3, '📈 Resumo')
+
+    // Download
+    const fname = `ARclad_Leads_${(fairName||'Feira').replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`
+    XLSX.writeFile(wb, fname)
   }
 
   const fl = leads.filter(l=>adminFilter==='todos'||l.temperatura===adminFilter)
@@ -552,7 +631,7 @@ export default function App() {
                 </tbody>
               </table>
             </div>
-            <button className={styles.btnPrimary} onClick={exportCSV}>⬇ Exportar CSV</button>
+            <button className={styles.btnPrimary} onClick={exportExcel}>⬇ Exportar Excel</button>
             <button className={styles.btnOut} onClick={()=>{if(!confirm('Apagar lista local?'))return;setLeads([])}} style={{marginTop:8}}>Limpar lista local</button>
           </>}
           {adminTab==='report'&&(
