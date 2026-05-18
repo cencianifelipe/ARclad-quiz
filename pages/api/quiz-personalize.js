@@ -17,62 +17,73 @@ export default async function handler(req, res) {
         max_tokens: 1200,
         system: `Você é consultor da ARclad do Brasil (distribuidora de materiais autoadesivos, BOPP, Couché, térmicos, silicone, laminação).
 
-REGRAS ABSOLUTAS:
-- Liner = APENAS o suporte siliconado que protege o adesivo. NÃO confunda com adesivo.
-- Wash-off = BOPP especial que se separa da garrafa PET na reciclagem. A resposta correta é sempre a opção que menciona isso.
-- NUNCA mencione vinil nem PSA.
-- Couché = papel revestido (com acento agudo no é).
+INSTRUÇÃO CRÍTICA: Retorne APENAS um objeto JSON válido, sem markdown, sem backticks, sem explicações.
 
-Dado o perfil do visitante, gere 8 perguntas personalizadas e retorne SOMENTE um JSON válido:
+Formato esperado (EXATO):
 {"questions":[
-  {"id":"4","bloco":"Sobre você","q":"pergunta personalizada?","opts":["A","B","C","D"],"r":null},
-  ...
-  {"id":"8","bloco":"Pergunta técnica","q":"pergunta técnica sobre BOPP/Couché/flexografia?","opts":["A","B","C","D"],"r":1}
+  {"id":"4","bloco":"Bloco X","q":"Pergunta?","opts":["A","B","C","D"],"r":null},
+  {"id":"8","bloco":"Pergunta técnica","q":"?","opts":["A","B","C","D"],"r":1,"feedback":"Resposta correta porque..."}
 ]}
 
-Regras de geração:
-- Q4: Como chegou à ARclad? (sempre: Já sou cliente / Conhecia mas nunca comprei / Já ouvi falar / Conheci aqui na feira) r:null
-- Q5: O que trouxe ao stand? (adaptar ao segmento) r:null
-- Q6: Material que mais compra? (adaptar ao segmento, mencionar materiais ARclad relevantes) r:null
-- Q7: Suporte técnico do fornecedor? (sempre: Excelente/Razoável/Ruim/Sem suporte) r:null
-- Q7b: Motivo suporte ruim? (se aplicável, id:"7b", adicionar campo "condicional":true) r:null
-- Q8: Pergunta técnica sobre material RELEVANTE ao segmento (r deve ser o índice 0-3 da resposta correta)
-- Q9: Maior desafio? (adaptar ao segmento) r:null
-- Q10: O que faria trocar de fornecedor? (adaptar) r:null
-- Q11: Projeto nos próximos 3 meses? (sempre: Sim concreto/Em orçamento/Talvez/Não) r:null
+REGRAS ABSOLUTAS:
+1. Liner siliconado = suporte que protege o adesivo (NUNCA confunda com o adesivo PSA)
+2. Wash-off = BOPP especial que se separa da garrafa PET na reciclagem — resposta técnica sempre aponta isso
+3. NUNCA mencione vinil ou PSA
+4. Couché = papel revestido com acento (Couché)
+5. Gere EXATAMENTE 8 perguntas com IDs: 4,5,6,7,7b,8,9,10,11
 
-Para Q8 (técnica), use "feedback" com a explicação correta (máx 25 palavras).
-Retorne APENAS o JSON, sem markdown nem explicações.`,
+Personalização por segmento:
+- GRÁFICA: foco em processo, BOPP, filmes de impressão, suporte ao maquinário
+- MARCA: foco em sustentabilidade, branding, reciclagem, PET wash-off
+- AGÊNCIA: foco em acabamentos especiais, PDV, Couché premium, laminação
+- DISTRIBUIDOR: foco em portfólio, margens, suporte ao cliente final
+
+Para Q8 (técnica):
+- Se MARCA → pergunte sobre BOPP wash-off para PET reciclável (resposta correta é B)
+- Se GRÁFICA → pergunte sobre função do liner no autoadesivo
+- Se AGÊNCIA → pergunte sobre Couché para PDV
+- Se DISTRIBUIDOR → pergunte sobre componentes do autoadesivo
+
+Retorne APENAS JSON, nada mais.`,
         messages: [{
           role: 'user',
-          content: `Perfil: Segmento="${segmento}", Faturamento="${faturamento}", SKUs="${skus}", Feira="${feira}". Gere as 8 perguntas personalizadas.`
+          content: `Segmento: "${segmento}" | Faturamento: "${faturamento}" | SKUs: "${skus}" | Feira: "${feira}". Gere as 8 perguntas personalizadas em JSON puro.`
         }],
       }),
     })
 
     if (!response.ok) throw new Error(`API ${response.status}`)
     const data = await response.json()
-    const text = data.content?.[0]?.text || ''
+    const rawText = data.content?.[0]?.text || ''
 
-    let questions = null
-    try {
-      const m = text.match(/\{[\s\S]*\}/)
-      if (m) {
-        const parsed = JSON.parse(m[0])
-        if (Array.isArray(parsed.questions) && parsed.questions.length > 0) {
-          questions = parsed.questions
-        }
-      }
-    } catch(e) { /* fallback abaixo */ }
-
-    if (questions) {
-      return res.status(200).json({ questions })
-    } else {
-      // Fallback — perguntas padrão
-      return res.status(200).json({ questions: getDefaultQuestions() })
+    let jsonText = rawText
+    if (rawText.includes('```')) {
+      jsonText = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
     }
 
+    let parsed = null
+    try {
+      parsed = JSON.parse(jsonText)
+      if (Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+        return res.status(200).json({ questions: parsed.questions })
+      }
+    } catch(e) {
+      const m = jsonText.match(/\{[\s\S]*\}/)
+      if (m) {
+        try {
+          parsed = JSON.parse(m[0])
+          if (Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+            return res.status(200).json({ questions: parsed.questions })
+          }
+        } catch(e2) {}
+      }
+    }
+
+    // Fallback
+    return res.status(200).json({ questions: getDefaultQuestions() })
+
   } catch (error) {
+    console.error('Personalize error:', error)
     return res.status(200).json({ questions: getDefaultQuestions() })
   }
 }
@@ -84,7 +95,7 @@ function getDefaultQuestions() {
     {"id":"6","bloco":"Sobre você e seu negócio","q":"Qual material você mais compra hoje?","opts":["BOPP ou filmes plásticos","Papel Couché ou revestido","Substratos térmicos","Material autoadesivo com liner siliconado"],"r":null},
     {"id":"7","bloco":"Sobre você e seu negócio","q":"Como avalia o suporte técnico do seu fornecedor atual?","opts":["Excelente","Razoável","Ruim","Não tenho suporte"],"r":null},
     {"id":"7b","bloco":"Sobre você e seu negócio","q":"Por que o suporte não é excelente?","opts":["Demora para responder","Não conhece bem os materiais","Não resolve meus problemas técnicos","Não oferece suporte proativo"],"r":null,"condicional":true},
-    {"id":"8","bloco":"Pergunta técnica","q":"O que diferencia o BOPP wash-off dos demais filmes BOPP?","opts":["Maior resistência a rasgos","Separa-se da garrafa PET na reciclagem","É mais transparente","Tem acabamento metalizado automático"],"r":1,"feedback":"O wash-off separa-se da garrafa PET durante a reciclagem, facilitando a pureza do flake. Material essencial para embalagens sustentáveis."},
+    {"id":"8","bloco":"Pergunta técnica","q":"O que diferencia o BOPP wash-off dos demais filmes BOPP?","opts":["Maior resistência a rasgos","Separa-se da garrafa PET na reciclagem","É mais transparente","Tem acabamento metalizado automático"],"r":1,"feedback":"O wash-off separa-se da garrafa PET durante reciclagem, facilitando pureza do flake de PET."},
     {"id":"9","bloco":"Sobre você e seu negócio","q":"Qual é o seu maior desafio com materiais hoje?","opts":["Preço alto","Prazo imprevisível","Falta de variedade","Suporte técnico fraco"],"r":null},
     {"id":"10","bloco":"Sobre você e seu negócio","q":"O que te faria trocar de fornecedor?","opts":["Preço melhor","Material de maior qualidade","Suporte técnico especializado","Entrega rápida e estoque garantido"],"r":null},
     {"id":"11","bloco":"Sobre você e seu negócio","q":"Tem projeto de material nos próximos 3 meses?","opts":["Sim, projeto concreto","Sim, em fase de orçamento","Talvez","Não por enquanto"],"r":null}
