@@ -260,7 +260,7 @@ export default function App() {
   }
   const handlePin = v => {
     setPinVal(v)
-    if (v.length===4) { if (v==='1234') { setShowPin(false); openAdmin() } else setPinVal('') }
+    if (v.length===4) { if (v==='7777') { setShowPin(false); openAdmin() } else setPinVal('') }
   }
 
   const exportExcel = () => {
