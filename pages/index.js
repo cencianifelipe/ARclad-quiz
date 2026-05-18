@@ -73,8 +73,13 @@ export default function App() {
       })
       const data = await res.json()
       if (!res.ok || !data.questions) throw new Error('sem perguntas')
+      // Validar e filtrar perguntas malformadas
+      const validated = data.questions.filter(q => {
+        return q && typeof q === 'object' && q.id && typeof q.q === 'string' && Array.isArray(q.opts) && q.opts.length === 4
+      })
+      if (validated.length < 8) throw new Error('perguntas insuficientes')
       // Filtrar perguntas condicionais
-      const personalizedFlow = data.questions.filter(q => {
+      const personalizedFlow = validated.filter(q => {
         if (q.condicional) {
           const p7ans = baseAnswers['7']
           return p7ans !== undefined && p7ans !== 0
@@ -97,6 +102,7 @@ export default function App() {
 
   const pickAns = (idx) => {
     if (selIdx !== null || personalizing) return
+    if (!curQ || !Array.isArray(curQ.opts) || !curQ.opts[idx]) return
     setSelIdx(idx)
     const q = curQ
     const newAnswers = { ...answers, [String(q.id)]: idx }
@@ -202,9 +208,10 @@ export default function App() {
       locale: 'pt',
     }
     try {
-      await fetch('/api/leads', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(lead) })
-      setSaved(true)
-    } catch(e) { console.error(e) }
+      const r = await fetch('/api/leads', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(lead) })
+      if (r.ok) setSaved(true)
+      else console.error('Falha ao salvar:', await r.text())
+    } catch(e) { console.error('Erro saveLead:', e) }
     setScreen('result')
   }
 
@@ -360,7 +367,7 @@ export default function App() {
             <div className={styles.qtxt}>{curQ.q}</div>
           </div>
           <div className={styles.opts}>
-            {curQ.opts.map((opt,i)=>{
+            {Array.isArray(curQ.opts) && curQ.opts.map((opt,i)=>{
               const isRight = isTech&&i===curQ.r&&selIdx!==null
               const isWrong = isTech&&selIdx===i&&i!==curQ.r
               const isNeu   = !isTech&&selIdx===i
