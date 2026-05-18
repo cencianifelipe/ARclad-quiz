@@ -263,22 +263,10 @@ export default function App() {
     if (v.length===4) { if (v==='1234') { setShowPin(false); openAdmin() } else setPinVal('') }
   }
 
-  const exportExcel = async () => {
+  const exportExcel = () => {
     if (!leads.length) { alert('Nenhum lead para exportar.'); return }
-
-    // Carregar SheetJS via script tag (compatível com Next.js)
-    const loadXLSX = () => new Promise((resolve, reject) => {
-      if (window.XLSX) { resolve(window.XLSX); return }
-      const script = document.createElement('script')
-      script.src = 'https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
-      script.onload = () => resolve(window.XLSX)
-      script.onerror = reject
-      document.head.appendChild(script)
-    })
-
-    let XLSX
-    try { XLSX = await loadXLSX() }
-    catch(e) { alert('Erro ao carregar biblioteca Excel. Verifique sua conexão.'); return }
+    const XLSX = window.XLSX
+    if (!XLSX) { alert('Biblioteca Excel não carregada. Recarregue a página.'); return }
 
     const tM = {quente:'🔥 Quente', morno:'⛅ Morno', frio:'❄️ Frio'}
     const pM = {Alta:'🔴 Alta', Media:'🟡 Média', Baixa:'🟢 Baixa'}
