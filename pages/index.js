@@ -250,7 +250,7 @@ export default function App() {
 <p>Com base na sua participação no <strong>Consultor Interativo ARclad</strong> durante a feira <strong>${fairName}</strong>, identificamos o perfil técnico da sua operação e preparamos esta recomendação:</p>
 <div class="reco"><h2>OPORTUNIDADE IDENTIFICADA</h2><p>${fp?.oportunidade||'Portfólio completo ARclad com suporte técnico especializado.'}</p></div>
 <p>A <strong>ARclad</strong> é distribuidora especializada com unidades em Rionegro e Cartagena (Colômbia), oferecendo portfólio completo de BOPP, Couché, substratos térmicos e materiais autoadesivos com suporte técnico especializado pré e pós-venda.</p>
-<div class="footer"><div class="sig"><div class="av">FC</div><div><div class="name">Felipe Cenciani</div><div class="role">Consultor Comercial · ARclad do Brasil</div><div class="email">felipe.cenciani@arclad.com</div></div></div></div>
+<div class="footer"><div class="sig"><div class="av">A</div><div><div class="name">ARclad do Brasil</div><div class="role">Materiais Autoadesivos</div></div></div></div>
 </div></body></html>`)
     w.document.close()
   }
@@ -531,18 +531,6 @@ export default function App() {
             </div>
           )}
           <div className={styles.sep}/>
-          <div className={styles.cta}>
-            <div className={styles.ctaTitle}>👋 Fale com nosso consultor</div>
-            <div className={styles.ctaRow}>
-              <div className={styles.ctaAv}>🏢</div>
-              <div>
-                <div className={styles.ctaName}>{CONSULTANT.name}</div>
-                <div className={styles.ctaRole}>{CONSULTANT.role}</div>
-                
-              </div>
-            </div>
-            <div className={styles.ctaMsg}>Visite nosso stand e conheça o portfólio completo ARclad.</div>
-          </div>
           <button className={styles.btnOut} onClick={generateLetter} style={{marginTop:0,marginBottom:12}}>📄 Gerar carta de recomendação técnica</button>
           {npsRated===null?(
             <div style={{background:'rgba(201,255,31,.05)',border:'1px solid rgba(201,255,31,.16)',borderRadius:12,padding:'14px 16px',marginBottom:12,textAlign:'center'}}>
