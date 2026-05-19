@@ -33,10 +33,10 @@ Q4 — Brand awareness (fixa para todos):
 Opções: ["Já sou cliente","Conhecia mas nunca comprei","Já ouvi falar","Conheci aqui na feira hoje"]
 
 Q5 — Motivação (adapte ao segmento)
-Q6 — Material principal: SEMPRE usar estas 4 opções exatas:
-  ["BOPP (brilho, fosco, metalizado)", "Couché (brilho ou fosco)", "Térmico (direto ou transfer)", "Linhas especiais (PET, sustentáveis)"]
-Q6b — Qual linha especial? (condicional6b: true — aparece SÓ se Q6 = "Linhas especiais"):
-  ["PET / Poliéster", "BOPP especial / metalizado", "Térmico especial", "Sustentável"]
+Q6 — Material principal: OBRIGATÓRIO usar EXATAMENTE estas 4 opções para TODOS os segmentos, sem alterar:
+  {"id":"6","q":"Qual material você mais compra hoje?","opts":["BOPP (brilho, fosco, metalizado)","Couché (brilho ou fosco)","Térmico (direto ou transfer)","Linhas especiais (PET, sustentáveis)"],"r":null}
+Q6b — Qual linha especial? OBRIGATÓRIO incluir com condicional6b:true:
+  {"id":"6b","q":"Qual linha especial te interessa?","opts":["PET / Poliéster","BOPP especial / metalizado","Térmico especial","Sustentável"],"r":null,"condicional6b":true}
 Q7 — Avaliação do suporte (fixa): ["Excelente","Razoável","Ruim","Não tenho suporte"]
 Q7b — Por que suporte não é excelente ("condicional":true)
 Q8 — TÉCNICA (escolha um dos temas autorizados abaixo)
@@ -59,7 +59,7 @@ C) Vantagem do Couché fosco para visual premium
 D) Quando usar BOPP transparente vs branco (no-label look)
 
 🎨 AGÊNCIA — escolha UM destes:
-A) Qual Couché é ideal para acabamento premium em PDV
+A) Diferença entre BOPP brilhante e BOPP fosco para materiais promocionais
 B) Diferença entre laminação fosca e brilho
 C) Quando usar adesivo removível em campanha
 D) Quais materiais permitem hot stamping
@@ -121,25 +121,34 @@ Gere 9 perguntas em JSON puro. Para Q8 escolha UM tema da lista do segmento — 
         /\bvinil\b/i,
         /\bpsa\b/i,
       ]
-      
-      // Verificar cada pergunta individualmente
-      let hasAnyBanned = false
-      const cleanQuestions = parsed.questions.map((q, idx) => {
+
+      // Forçar Q6 e Q6b corretos — independente do que a IA gerou
+      const Q6_FIXED = {"id":"6","bloco":"Sobre você e seu negócio","q":"Qual material você mais compra hoje?","opts":["BOPP (brilho, fosco, metalizado)","Couché (brilho ou fosco)","Térmico (direto ou transfer)","Linhas especiais (PET, sustentáveis)"],"r":null}
+      const Q6B_FIXED = {"id":"6b","bloco":"Sobre você e seu negócio","q":"Qual linha especial te interessa?","opts":["PET / Poliéster","BOPP especial / metalizado","Térmico especial","Sustentável"],"r":null,"condicional6b":true}
+
+      let questions = parsed.questions.map(q => {
         if (!q) return null
+        if (String(q.id) === '6') return Q6_FIXED   // sempre substituir Q6
+        if (String(q.id) === '6b') return Q6B_FIXED // sempre substituir Q6b
+        // verificar banidos nas demais
         const qText = JSON.stringify(q)
         const isBanned = bannedPatterns.some(rx => rx.test(qText))
         if (isBanned) {
-          console.log(`🛡️ Pergunta ${idx} (id:${q.id}) bloqueada — substituindo`)
-          hasAnyBanned = true
-          // Pegar a pergunta segura equivalente do fallback
           const fallback = getDefaultQuestions(segmento)
           return fallback.find(fq => String(fq.id) === String(q.id)) || q
         }
         return q
       }).filter(Boolean)
-      
-      if (cleanQuestions.length >= 8) {
-        return res.status(200).json({ questions: cleanQuestions })
+
+      // Garantir que Q6b existe na lista
+      const hasQ6b = questions.some(q => String(q.id) === '6b')
+      if (!hasQ6b) {
+        const q6idx = questions.findIndex(q => String(q.id) === '6')
+        if (q6idx >= 0) questions.splice(q6idx + 1, 0, Q6B_FIXED)
+      }
+
+      if (questions.length >= 8) {
+        return res.status(200).json({ questions })
       }
     }
 
@@ -158,7 +167,7 @@ function getDefaultQuestions(segmento) {
   if (seg.includes('marca') || seg.includes('indústria') || seg.includes('industria')) {
     q8 = {"id":"8","bloco":"Pergunta técnica","q":"Qual a diferença principal entre BOPP brilhante e BOPP fosco para rótulos?","opts":["São idênticos, só mudam na impressão","Brilhante reflete mais luz, fosco tem visual premium e sofisticado","Fosco é mais resistente a rasgos","Brilhante é mais barato sempre"],"r":1,"feedback":"BOPP brilhante maximiza impacto visual com reflexo. BOPP fosco transmite sofisticação e premium — ideal para vinhos, cosméticos e gourmet."}
   } else if (seg.includes('agência') || seg.includes('agencia') || seg.includes('marketing')) {
-    q8 = {"id":"8","bloco":"Pergunta técnica","q":"Para um material com acabamento premium em PDV, qual papel é ideal?","opts":["Sulfite comum","Kraft natural","Couché revestido com gramatura adequada","Papel jornal"],"r":2,"feedback":"Couché revestido com gramatura adequada oferece o acabamento premium ideal para PDV."}
+    q8 = {"id":"8","bloco":"Pergunta técnica","q":"Para materiais promocionais com visual diferenciado, qual é a principal diferença entre BOPP brilhante e BOPP fosco?","opts":["São idênticos — só muda o nome comercial","Brilhante reflete luz e tem impacto visual imediato; fosco transmite sofisticação e premium","Fosco é mais resistente a rasgos","Brilhante é sempre mais barato"],"r":1,"feedback":"BOPP brilhante maximiza impacto visual com reflexo. BOPP fosco transmite sofisticação — ideal para campanhas premium."}
   } else if (seg.includes('distribuidor')) {
     q8 = {"id":"8","bloco":"Pergunta técnica","q":"Em um material autoadesivo, qual componente É o adesivo?","opts":["A camada adesiva entre facestock e liner","O liner siliconado","O facestock impresso","O verniz de acabamento"],"r":0,"feedback":"O adesivo é a camada entre o facestock (papel ou filme) e o liner siliconado."}
   } else {
