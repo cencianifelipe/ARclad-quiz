@@ -59,7 +59,7 @@ C) Vantagem do Couché fosco para visual premium
 D) Quando usar BOPP transparente vs branco (no-label look)
 
 🎨 AGÊNCIA — escolha UM destes:
-A) Qual Couché é ideal para acabamento premium em PDV
+A) Diferença entre BOPP brilhante e BOPP fosco para materiais promocionais
 B) Diferença entre laminação fosca e brilho
 C) Quando usar adesivo removível em campanha
 D) Quais materiais permitem hot stamping
@@ -167,7 +167,7 @@ function getDefaultQuestions(segmento) {
   if (seg.includes('marca') || seg.includes('indústria') || seg.includes('industria')) {
     q8 = {"id":"8","bloco":"Pergunta técnica","q":"Qual a diferença principal entre BOPP brilhante e BOPP fosco para rótulos?","opts":["São idênticos, só mudam na impressão","Brilhante reflete mais luz, fosco tem visual premium e sofisticado","Fosco é mais resistente a rasgos","Brilhante é mais barato sempre"],"r":1,"feedback":"BOPP brilhante maximiza impacto visual com reflexo. BOPP fosco transmite sofisticação e premium — ideal para vinhos, cosméticos e gourmet."}
   } else if (seg.includes('agência') || seg.includes('agencia') || seg.includes('marketing')) {
-    q8 = {"id":"8","bloco":"Pergunta técnica","q":"Para um material com acabamento premium em PDV, qual papel é ideal?","opts":["Sulfite comum","Kraft natural","Couché revestido com gramatura adequada","Papel jornal"],"r":2,"feedback":"Couché revestido com gramatura adequada oferece o acabamento premium ideal para PDV."}
+    q8 = {"id":"8","bloco":"Pergunta técnica","q":"Para materiais promocionais com visual diferenciado, qual é a principal diferença entre BOPP brilhante e BOPP fosco?","opts":["São idênticos — só muda o nome comercial","Brilhante reflete luz e tem impacto visual imediato; fosco transmite sofisticação e premium","Fosco é mais resistente a rasgos","Brilhante é sempre mais barato"],"r":1,"feedback":"BOPP brilhante maximiza impacto visual com reflexo. BOPP fosco transmite sofisticação — ideal para campanhas premium."}
   } else if (seg.includes('distribuidor')) {
     q8 = {"id":"8","bloco":"Pergunta técnica","q":"Em um material autoadesivo, qual componente É o adesivo?","opts":["A camada adesiva entre facestock e liner","O liner siliconado","O facestock impresso","O verniz de acabamento"],"r":0,"feedback":"O adesivo é a camada entre o facestock (papel ou filme) e o liner siliconado."}
   } else {
