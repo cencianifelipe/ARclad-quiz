@@ -93,8 +93,8 @@ export default function App() {
           const p7ans = baseAnswers['7']
           return p7ans !== undefined && p7ans !== 0
         }
-        if (q.condicional6b) { // Q6b — só aparece se Q6 = "Linhas especiais" (índice 3)
-          return false // será tratada no advance() após Q6 ser respondida no quiz ao vivo
+        if (q.condicional6b) { // Q6b — entra no flow, advance() controla se mostra
+          return true // advance() pula se Q6 ≠ "Linhas especiais"
         }
         return true
       })
@@ -102,7 +102,8 @@ export default function App() {
     } catch(e) {
       // Fallback: usar perguntas padrão
       const fallback = FALLBACK_QS.filter(q => {
-        if (q.condicional) return false
+        if (q.condicional) return false  // Q7b — removida aqui, advance() controla
+        // Q6b (condicional6b) fica no flow — advance() controla quando mostrar
         return true
       })
       setFlow([...BASE_DYN, ...fallback])
@@ -121,6 +122,11 @@ export default function App() {
     const newLabels  = { ...answerLabels, [String(q.id)]: q.opts[idx] }
     setAnswers(newAnswers)
     setAnswerLabels(newLabels)
+    // Se acabou de responder Q1 (segmento), atualizar Q3 dinamicamente
+    if (String(q.id) === '1') {
+      const q3dyn = (idx === 1 || idx === 2) ? Q3_SKUS : Q3_VOLUME
+      setFlow(prev => [prev[0], prev[1], q3dyn, ...prev.slice(3)])
+    }
 
     const isTech = q.r !== null && q.r !== undefined
     const errou  = isTech && idx !== q.r
