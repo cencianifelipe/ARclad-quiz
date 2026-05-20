@@ -36,7 +36,7 @@ Q5 — Motivação (adapte ao segmento)
 Q6 — Material principal: OBRIGATÓRIO usar EXATAMENTE estas 4 opções para TODOS os segmentos, sem alterar:
   {"id":"6","q":"Qual material você mais compra hoje?","opts":["BOPP (brilho, fosco, metalizado)","Couché (brilho ou fosco)","Térmico (direto ou transfer)","Linhas especiais (PET, sustentáveis)"],"r":null}
 Q6b — Qual linha especial? OBRIGATÓRIO incluir com condicional6b:true:
-  {"id":"6b","q":"Qual linha especial te interessa?","opts":["PET / Poliéster","BOPP especial / metalizado","Térmico especial","Sustentável"],"r":null,"condicional6b":true}
+  {"id":"6b","q":"Qual linha especial te interessa?","opts":["PET / Poliéster","BOPP especial / metalizado","Materiais de segurança","Sustentável"],"r":null,"condicional6b":true}
 Q7 — Avaliação do suporte (fixa): ["Excelente","Razoável","Ruim","Não tenho suporte"]
 Q7b — Por que suporte não é excelente ("condicional":true)
 Q8 — TÉCNICA (escolha um dos temas autorizados abaixo)
@@ -53,16 +53,16 @@ C) Por que térmico direto não precisa de ribbon
 D) Gramatura ideal de Couché para impressão flexográfica
 
 🏭 MARCA — escolha UM destes:
-A) BOPP brilho vs BOPP fosco (diferença visual e aplicação — ideal para premium/gourmet)
-B) BOPP para congelados — qual característica diferencia (resposta: adesivo especial para baixa temperatura)
-C) Vantagem do Couché fosco para visual premium
+A) Quem define o material do rótulo hoje? (opções: Eu mesmo / A gráfica que produz / O fornecedor de material / Não sei ao certo) — resposta correta: não há certa/errada, mas "A gráfica" abre conversa sobre como a ARclad pode ajudar a especificar
+B) BOPP brilho vs BOPP fosco (diferença visual e aplicação — ideal para premium/gourmet)
+C) BOPP para congelados — qual característica diferencia (resposta: adesivo especial para baixa temperatura)
 D) Quando usar BOPP transparente vs branco (no-label look)
 
 🎨 AGÊNCIA — escolha UM destes:
-A) Seu cliente exporta frutas para a Europa e precisa de etiqueta que cumpra a regulação PPWR da União Europeia. Qual solução ARclad atende essa exigência? (correta: Bond Natural Compostável certificado OK compost INDUSTRIAL TÜV Áustria)
-B) Diferença entre laminação fosca e brilho
-C) Quando usar adesivo removível em campanha
-D) Quais materiais permitem hot stamping
+A) Você já recebeu suporte técnico de um distribuidor de materiais para especificar o rótulo do seu cliente? (opções: Sim, regularmente / Às vezes / Nunca / Não sabia que isso existia) — resposta que mais abre conversa: Nunca ou Não sabia
+B) Seu cliente exporta frutas para a Europa e precisa de etiqueta que cumpra a regulação PPWR da União Europeia. Qual solução ARclad atende essa exigência? (correta: Bond Natural Compostável certificado OK compost INDUSTRIAL TÜV Áustria)
+C) Diferença entre laminação fosca e brilho
+D) Quando usar adesivo removível em campanha
 
 📦 DISTRIBUIDOR — escolha UM destes:
 A) Qual componente É o adesivo no autoadesivo (correta: camada entre facestock e liner)
@@ -124,7 +124,7 @@ Gere 9 perguntas em JSON puro. Para Q8 escolha UM tema da lista do segmento — 
 
       // Forçar Q6 e Q6b corretos — independente do que a IA gerou
       const Q6_FIXED = {"id":"6","bloco":"Sobre você e seu negócio","q":"Qual material você mais compra hoje?","opts":["BOPP (brilho, fosco, metalizado)","Couché (brilho ou fosco)","Térmico (direto ou transfer)","Linhas especiais (PET, sustentáveis)"],"r":null}
-      const Q6B_FIXED = {"id":"6b","bloco":"Sobre você e seu negócio","q":"Qual linha especial te interessa?","opts":["PET / Poliéster","BOPP especial / metalizado","Térmico especial","Sustentável"],"r":null,"condicional6b":true}
+      const Q6B_FIXED = {"id":"6b","bloco":"Sobre você e seu negócio","q":"Qual linha especial te interessa?","opts":["PET / Poliéster","BOPP especial / metalizado","Materiais de segurança","Sustentável"],"r":null,"condicional6b":true}
 
       let questions = parsed.questions.map(q => {
         if (!q) return null
@@ -165,9 +165,9 @@ function getDefaultQuestions(segmento) {
   let q8
 
   if (seg.includes('marca') || seg.includes('indústria') || seg.includes('industria')) {
-    q8 = {"id":"8","bloco":"Pergunta técnica","q":"Qual a diferença principal entre BOPP brilhante e BOPP fosco para rótulos?","opts":["São idênticos, só mudam na impressão","Brilhante reflete mais luz, fosco tem visual premium e sofisticado","Fosco é mais resistente a rasgos","Brilhante é mais barato sempre"],"r":1,"feedback":"BOPP brilhante maximiza impacto visual com reflexo. BOPP fosco transmite sofisticação e premium — ideal para vinhos, cosméticos e gourmet."}
+    q8 = {"id":"8","bloco":"Pergunta técnica","q":"Quem define o material do rótulo da sua empresa hoje?","opts":["Eu mesmo, com base em pesquisa própria","A gráfica que produz nossos rótulos","O fornecedor de material nos indica","Nunca paramos para avaliar — usamos o que está disponível"],"r":null,"feedback":"A ARclad oferece consultoria técnica direta para marcas — ajudando a especificar o material ideal antes mesmo de chegar na gráfica, garantindo resultado e evitando retrabalho."}
   } else if (seg.includes('agência') || seg.includes('agencia') || seg.includes('marketing')) {
-    q8 = {"id":"8","bloco":"Pergunta técnica","q":"Seu cliente exporta frutas para a Europa e precisa de etiqueta que cumpra a regulação PPWR da União Europeia. Qual solução ARclad atende essa exigência?","opts":["BOPP brilhante com adesivo permanente","PET transparente com liner glassine","Térmico direto sem BPA","Bond Natural Compostável — certificado OK compost INDUSTRIAL TÜV Áustria"],"r":3,"feedback":"O Bond Natural Compostável da ARclad possui certificação OK compost INDUSTRIAL da TÜV Áustria, cumprindo a norma EN 13432 exigida pela regulação europeia PPWR para etiquetas em frutas e verduras frescas."}
+    q8 = {"id":"8","bloco":"Pergunta técnica","q":"Quem define o material do rótulo dos seus clientes hoje?","opts":["A própria agência, com base em pesquisa","A gráfica que produz os rótulos","O fornecedor de material indica","Nunca paramos para avaliar — usamos o que está disponível"],"r":null,"feedback":"A ARclad oferece consultoria técnica para agências — ajudando a especificar o material ideal para cada projeto do cliente, antes mesmo de chegar na gráfica."}
   } else if (seg.includes('distribuidor')) {
     q8 = {"id":"8","bloco":"Pergunta técnica","q":"Em um material autoadesivo, qual componente É o adesivo?","opts":["A camada adesiva entre facestock e liner","O liner siliconado","O facestock impresso","O verniz de acabamento"],"r":0,"feedback":"O adesivo é a camada entre o facestock (papel ou filme) e o liner siliconado."}
   } else {
@@ -179,7 +179,7 @@ function getDefaultQuestions(segmento) {
     {"id":"4","bloco":"Sobre você e seu negócio","q":"Como você chegou até a ARclad?","opts":["Já sou cliente","Conhecia mas nunca comprei","Já ouvi falar","Conheci aqui na feira hoje"],"r":null},
     {"id":"5","bloco":"Sobre você e seu negócio","q":"O que te trouxe ao nosso stand?","opts":["Buscar novos materiais","Avaliar suporte técnico","Indicação de parceiro","Conhecer o portfólio"],"r":null},
     {"id":"6","bloco":"Sobre você e seu negócio","q":"Qual material você mais compra/utiliza hoje?","opts":["BOPP (brilho, fosco, metalizado)","Couché (brilho ou fosco)","Térmico (direto ou transfer)","Linhas especiais (PET, sustentáveis)"],"r":null},
-    {"id":"6b","bloco":"Sobre você e seu negócio","q":"Qual linha especial te interessa?","opts":["PET / Poliéster","BOPP especial / metalizado","Térmico especial","Sustentável"],"r":null,"condicional6b":true},
+    {"id":"6b","bloco":"Sobre você e seu negócio","q":"Qual linha especial te interessa?","opts":["PET / Poliéster","BOPP especial / metalizado","Materiais de segurança","Sustentável"],"r":null,"condicional6b":true},
     {"id":"7","bloco":"Sobre você e seu negócio","q":"Como avalia o suporte técnico do seu fornecedor atual?","opts":["Excelente","Razoável","Ruim","Não tenho suporte"],"r":null},
     {"id":"7b","bloco":"Sobre você e seu negócio","q":"Por que o suporte não é excelente?","opts":["Demora para responder","Não conhece bem os materiais","Não resolve problemas técnicos","Não oferece suporte proativo"],"r":null,"condicional":true},
     q8,
