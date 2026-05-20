@@ -58,7 +58,7 @@ A oportunidade vem EXCLUSIVAMENTE de:
 🌡️ Térmicos: direto, transfer, para cadeia fria
 🔵 PET / Poliéster: alta performance e durabilidade
 🎨 Laminação: brilho, fosca, especiais
-🌱 Linha sustentável: materiais com certificação ambiental
+🌱 Linha sustentável: Bond Natural Compostável, LITHO80-CO, papel sem revestimento compostável (certificação OK compost INDUSTRIAL TÜV Áustria)
 ⚙️ Silicone
 
 NOTA SOBRE ADESIVOS (componentes — NÃO mencionar como oportunidade principal):
