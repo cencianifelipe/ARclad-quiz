@@ -55,12 +55,8 @@ export default function App() {
   }).length
 
   const startQuiz = () => {
-    // Ajustar Q3 dinamicamente baseado no segmento (Q1)
-    const seg = baseAnswers['1']
-    // Marca (idx 1) ou Agência (idx 2) → perguntar SKUs; demais → volume m²
-    const q3 = (seg === 1 || seg === 2) ? Q3_SKUS : Q3_VOLUME
-    const BASE_QS_DYN = [BASE_QS[0], BASE_QS[1], q3]
-    setFlow(BASE_QS_DYN)
+    // Sempre começa com volume m² — Q3 será ajustada após Q1 ser respondida
+    setFlow([...BASE_QS])
     setQIdx(0); setAnswers({}); setAnswerLabels({})
     setSelIdx(null); setShowFeedback(false); setFeedbackText('')
     setFinalText(''); setFp(null); setPersonalizing(false)
@@ -73,6 +69,10 @@ export default function App() {
     const seg   = baseLabels['1'] || ''
     const fat   = baseLabels['2'] || ''
     const skus  = baseLabels['3'] || ''
+    // Q3 dinâmica: Marca (idx 1) ou Agência (idx 2) → SKUs; demais → volume m²
+    const segIdx = baseAnswers['1']
+    const q3dyn = (segIdx === 1 || segIdx === 2) ? Q3_SKUS : Q3_VOLUME
+    const BASE_DYN = [BASE_QS[0], BASE_QS[1], q3dyn]
 
     try {
       const res = await fetch('/api/quiz-personalize', {
@@ -98,16 +98,16 @@ export default function App() {
         }
         return true
       })
-      setFlow([...BASE_QS_DYN, ...personalizedFlow])
+      setFlow([...BASE_DYN, ...personalizedFlow])
     } catch(e) {
       // Fallback: usar perguntas padrão
       const fallback = FALLBACK_QS.filter(q => {
         if (q.condicional) return false
         return true
       })
-      setFlow([...BASE_QS_DYN, ...fallback])
+      setFlow([...BASE_DYN, ...fallback])
     }
-    setQIdx(BASE_QS_DYN.length) // avança para primeira personalizada
+    setQIdx(BASE_DYN.length) // avança para primeira personalizada
     setSelIdx(null); setShowFeedback(false)
     setPersonalizing(false)
   }
@@ -134,7 +134,7 @@ export default function App() {
   }
 
   const advance = (ans, labels, idx) => {
-    const isLastBase = qIdx === (flow.length > 3 ? 2 : BASE_QS.length - 1)
+    const isLastBase = qIdx === BASE_QS.length - 1
     if (isLastBase) {
       // Fim das 3 base → personalizar com IA
       personalizeQuiz(ans, labels)
